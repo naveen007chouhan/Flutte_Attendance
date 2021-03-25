@@ -168,7 +168,7 @@ class _MyLoginState extends State<MyLogin2> {
 
   void logg(String phnno) async {
     String url = All_API().baseurl +All_API().api_login;
-
+    print("response_url--> " +  url);
     String body =jsonEncode({"phone":phnno, "device_id": deviceId});
     print("phone_body--> " + body);
 
@@ -176,13 +176,13 @@ class _MyLoginState extends State<MyLogin2> {
       All_API().key: All_API().keyvalue,
     };
 
-    final http.Response response = await http.post(url,body:body,headers: headers);
+    var response = await http.post(url,body:body,headers: headers);
     print("response--> " +  response.toString());
     // check the status code for the result
     int statusCode = response.statusCode;
     print("status--> " + statusCode.toString());
     String bodydetial = response.body;
-    print(" body--> " + bodydetial.toString());
+    print(" body--> " + bodydetial);
 
 
     if (response.statusCode == 200) {

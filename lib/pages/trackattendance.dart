@@ -133,14 +133,20 @@ class TrackAttendanceState extends State<TrackAttendance> {
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery = MediaQuery.of(context);
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         title: Container(
           child: Text(
-            'Track Attendance', style: TextStyle(color: Colors.blue[2000]),),
+            'Track Attendance', style: TextStyle(color: Colors.orange),),
         ),
         automaticallyImplyLeading: false,
         backgroundColor: Colors.blue[1000],
+        leading: new IconButton(
+          icon: new Icon(
+            Icons.arrow_back_ios,
+            color: Colors.orange,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Column(
         children: [

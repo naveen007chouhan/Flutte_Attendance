@@ -89,8 +89,15 @@ class SalaryListState extends State<SalaryList> {
           backgroundColor: Colors.blue[1000],
           title: Container(
             margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 0),
-            child: Text(
-              'Salary List', style: TextStyle(color: Colors.orange),),
+        child: Text(
+          'Salary List', style: TextStyle(color: Colors.orange),),
+      ),
+          leading: new IconButton(
+            icon: new Icon(
+              Icons.arrow_back_ios,
+              color: Colors.orange,
+            ),
+            onPressed: () => Navigator.of(context).pop(),
           ),),
         body: FutureBuilder<SalaryModel>(
             future: salary(),

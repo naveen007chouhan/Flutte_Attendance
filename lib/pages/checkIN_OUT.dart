@@ -9,12 +9,14 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class checkIN_OUT extends StatefulWidget {
+class checkIN_OUT extends StatefulWidget{
+
   @override
   checkIN_OUTState createState() => checkIN_OUTState();
 }
 
 class checkIN_OUTState extends State<checkIN_OUT> {
+
   String name;
   String date;
   String uniqID;
@@ -24,11 +26,6 @@ class checkIN_OUTState extends State<checkIN_OUT> {
   String address;
   String device;
   String action_check;
-  String result = "Hey there !";
-
-  String attendanceTimeCheckIN;
-  String attendanceTimeCheckOut;
-  String checkINmsg;
 
   @override
   void initState() {
@@ -36,81 +33,36 @@ class checkIN_OUTState extends State<checkIN_OUT> {
     print(date); //
     super.initState();
     getData();
-  }
 
-  getData() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  }
+  getData()async{
+    SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
     setState(() {
-      name = sharedPreferences.getString("name");
-      uniqID = sharedPreferences.getString("unique_id");
-      latitude = sharedPreferences.getString("lat");
-      longitude = sharedPreferences.getString("long");
-      action = sharedPreferences.getString("");
-      address = sharedPreferences.getString("address");
-      device = sharedPreferences.getString("device");
+      name=sharedPreferences.getString("name");
+      uniqID=sharedPreferences.getString("unique_id");
+      latitude=sharedPreferences.getString("lat");
+      longitude=sharedPreferences.getString("long");
+      action=sharedPreferences.getString("");
+      address=sharedPreferences.getString("address");
+      device=sharedPreferences.getString("device");
       attendanceTimeCheckIN = sharedPreferences.getString("checkin_time");
       attendanceTimeCheckOut = sharedPreferences.getString("checkout_time");
-    });
-  }
-
-  var statusCode;
-  void chech_in_out(String action) async {
-    String url = All_API().baseurl + All_API().api_attendance;
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-
-    String body = jsonEncode({
-      "id": uniqID,
-      "current_date": date,
-      "latitute": latitude,
-      "longitute": longitude,
-      "area": address,
-      "device": device,
-      "qr_code": result,
-      "action": action
-    });
-    print("phone_body--> " + body);
-
-    Map<String, String> headers = {
-      All_API().key: All_API().keyvalue,
-    };
-    final http.Response response =
-        await http.post(url, body: body, headers: headers);
-    Map<String, dynamic> jasonData = jsonDecode(response.body);
-
-    print("Response :---->" + jasonData.toString());
-    checkINmsg = jasonData["msg"];
-    statusCode = response.statusCode;
-    if (response.statusCode == 200) {
-      setState(() {
+      print("Check IN Time-->"+attendanceTimeCheckIN);
+      if(attendanceTimeCheckIN!='Pending'){
         startTimer();
-        checkINmsg = jasonData["msg"];
-        attendanceTimeCheckIN = jasonData["checkin_time"];
-        attendanceTimeCheckOut = jasonData["checkout_time"];
-        sharedPreferences.setString("checkin_time", attendanceTimeCheckIN);
-        sharedPreferences.setString("checkout_time", attendanceTimeCheckOut);
-        print("Data Attendance : " + jasonData["msg"]);
-        print("Data Attendance : " + jasonData["checkin_time"]);
-        print("Data Attendance : " + jasonData["checkout_time"]);
-        final snackBar = SnackBar(
-          content: Text(
-            checkINmsg,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: Colors.green,
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      });
-    } else {
-      final snackBar = SnackBar(
-        content: Text(
-          checkINmsg,
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.green,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+      }
+      else if(attendanceTimeCheckOut!='Pending'){
+        timer.cancel();
+      }
+    });
   }
+
+  String result = "Hey there !";
+  String attendanceTimeCheckIN;
+  String attendanceTimeCheckOut;
+  String checkINmsg;
+  var statusCode;
+
 
   Future _scanQR(String action1) async {
     try {
@@ -146,31 +98,48 @@ class checkIN_OUTState extends State<checkIN_OUT> {
   }
 
   Timer timer;
-  int second = 0;
+  int second=0 ;
   int timeHour;
   int timeMinuts;
   int timeSecond;
+  var currentTime;
 
   void startTimer() {
     const oneSec = const Duration(seconds: 1);
     timer = new Timer.periodic(
       oneSec,
-      (Timer timer) {
-        if (attendanceTimeCheckIN != 'Pending') {
-          second++;
-          setState(() {
-            timeHour = (second / 3600).truncate();
-            timeMinuts = (second % 3600 / 60).truncate();
-            timeSecond = (second % 60).truncate();
-          });
-        } else if (attendanceTimeCheckOut != 'Pending') {
-          second;
-          setState(() {
-            timeHour = (second / 3600).truncate();
-            timeMinuts = (second % 3600 / 60).truncate();
-            timeSecond = (second % 60).truncate();
-          });
-        }
+          (Timer timer) {
+        second++;
+        setState(() {
+          DateTime now = new DateTime.now();
+          currentTime = DateFormat("h:mm").format(now);
+          int hour = now.hour;
+          int minute = now.minute;
+          int second = now.second;
+
+          var checkIntime=attendanceTimeCheckIN;
+          var splitTime=checkIntime.split(":").toList();
+          print(splitTime);
+          int hour2 = int.parse(splitTime[0].trim());
+          int minute2 = int.parse(splitTime[1].trim());
+          int second2 = int.parse(splitTime[2].trim());
+
+          timeHour=hour-hour2;
+          timeMinuts=minute+(60-minute2);
+          timeSecond=second+(60-second2);
+
+          if(timeHour<=0){
+            timeHour=0;
+          }
+          if(timeSecond>60){
+            timeSecond=timeSecond-60;
+            timeMinuts=timeMinuts+1;
+          }
+          if(timeMinuts>60){
+            timeMinuts=timeMinuts-60;
+            timeHour=timeHour+1;
+          }
+        });
       },
     );
   }
@@ -180,7 +149,6 @@ class checkIN_OUTState extends State<checkIN_OUT> {
     timer.cancel();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -189,22 +157,10 @@ class checkIN_OUTState extends State<checkIN_OUT> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Text(
-              "Woring Hour's : ",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              timeHour==null?"00 :":timeHour.toString() + ':',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              timeMinuts ==null?" 00 :":timeMinuts.toString() + ':',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              timeSecond ==null?" 00 ":timeSecond.toString(),
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+            Text("Woring Hour's : " , style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+            Text(timeHour==null?'00 : ':timeHour.toString()+':', style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+            Text(timeMinuts==null?'00 : ':timeMinuts.toString()+':', style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+            Text(timeSecond==null?'00':timeSecond.toString(), style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
           ],
         ),
         Row(
@@ -213,8 +169,9 @@ class checkIN_OUTState extends State<checkIN_OUT> {
           children: [
             ////Check IN
             Expanded(
-              flex: 4,
-              child:Card(
+              flex: 2,
+              child: Card(
+                elevation: 2,
                 child: Container(
                   height: 100, //10 for example
                   margin:const EdgeInsets.only(top: 5,left: 5,bottom: 5,right: 5),
@@ -223,19 +180,19 @@ class checkIN_OUTState extends State<checkIN_OUT> {
                     borderRadius: BorderRadius.all(
                       Radius.circular(5),
                     ),
-                    /*boxShadow: [
-                      BoxShadow(
-                          color: Colors.green[200],
-                          offset: Offset(0, 10),
-                          blurRadius: 10.0),
-                      BoxShadow(
-                          color: Colors.green[100],
-                          offset: Offset(0, 10),
-                          blurRadius: 10.0)
-                    ],*/
-                  ), //10 for example
+                    /* boxShadow: [
+                BoxShadow(
+                    color: Colors.green[200],
+                    offset: Offset(0, 1),
+                    blurRadius: 5.0),
+                BoxShadow(
+                    color: Colors.green[100],
+                    offset: Offset(0, 1),
+                    blurRadius: 5.0)
+              ],*/
+                  ),//10 for example
                   child: InkWell(
-                    onTap: () {
+                    onTap: (){
                       print("Check Out Clicked");
                       _scanQR("checkin");
                     },
@@ -244,35 +201,18 @@ class checkIN_OUTState extends State<checkIN_OUT> {
                         Container(
                             height: 100,
                             width: 60,
-                            child: Image.asset(
-                              'assets/check_in.png',
-                              height: 40,
-                              width: 40,
-                            )),
+                            child: Image.asset('assets/check_in.png',height: 40,width: 40,)
+                        ),
                         Container(
                           margin: EdgeInsets.only(
                               top: 20, left: 10, right: 0, bottom: 0),
                           child: Column(
                             children: [
-                              Text('CHECK IN',
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.blue[1000])),
-                              statusCode == 200
-                                  ? Padding(
+                              Text('CHECK IN',style: TextStyle(fontSize: 15,fontWeight:FontWeight.bold,color: Colors.blue[1000])),
+                              Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(attendanceTimeCheckIN,
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.blue[1000])),
-                              )
-                                  : Text("Pending",
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.blue[1000])),
+                                child: Text(attendanceTimeCheckIN!=null?attendanceTimeCheckIN:"Pending",style: TextStyle(fontSize: 15,fontWeight:FontWeight.bold,color: Colors.blue[1000])),
+                              ),
                             ],
                           ),
                         )
@@ -281,12 +221,12 @@ class checkIN_OUTState extends State<checkIN_OUT> {
                   ),
                 ),
               ),
-
             ),
             /////Check OUT
             Expanded(
-              flex: 4,
-              child:Card(
+              flex: 2,
+              child: Card(
+                elevation: 2,
                 child: Container(
                   height: 100, //10 for example
                   margin:const EdgeInsets.only(top: 5,left: 5,bottom: 5,right: 5),
@@ -295,19 +235,19 @@ class checkIN_OUTState extends State<checkIN_OUT> {
                     borderRadius: BorderRadius.all(
                       Radius.circular(5),
                     ),
-                    /*boxShadow: [
-                      BoxShadow(
-                          color: Colors.red[200],
-                          offset: Offset(0, 10),
-                          blurRadius: 10.0),
-                      BoxShadow(
-                          color: Colors.red[100],
-                          offset: Offset(0, 10),
-                          blurRadius: 10.0)
-                    ],*/
-                  ), //10 for //10 for example
+                    /* boxShadow: [
+                BoxShadow(
+                    color: Colors.red[200],
+                    offset: Offset(0, 1),
+                    blurRadius: 5.0),
+                BoxShadow(
+                    color: Colors.red[100],
+                    offset: Offset(0, 1),
+                    blurRadius: 5.0)
+              ],*/
+                  ),//10 for //10 for example
                   child: InkWell(
-                    onTap: () {
+                    onTap: (){
                       print("Check Out Clicked");
                       _scanQR("checkout");
                     },
@@ -316,35 +256,18 @@ class checkIN_OUTState extends State<checkIN_OUT> {
                         Container(
                             height: 100,
                             width: 60,
-                            child: Image.asset(
-                              'assets/check_out.png',
-                              height: 40,
-                              width: 40,
-                            )),
+                            child: Image.asset('assets/check_out.png',height: 40,width: 40,)
+                        ),
                         Container(
                           margin: EdgeInsets.only(
                               top: 20, left: 10, right: 0, bottom: 0),
                           child: Column(
                             children: [
-                              Text('CHECK OUT',
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.blue[1000])),
-                              statusCode == 200
-                                  ? Padding(
+                              Text('CHECK OUT',style: TextStyle(fontSize: 15,fontWeight:FontWeight.bold,color: Colors.blue[1000])),
+                              Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(attendanceTimeCheckOut,
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.blue[1000])),
-                              )
-                                  : Text("Pending",
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.blue[1000])),
+                                child: Text(attendanceTimeCheckOut!=null?attendanceTimeCheckOut:"Pending",style: TextStyle(fontSize: 15,fontWeight:FontWeight.bold,color: Colors.blue[1000])),
+                              ),
                             ],
                           ),
                         )
@@ -353,7 +276,6 @@ class checkIN_OUTState extends State<checkIN_OUT> {
                   ),
                 ),
               ),
-
             )
           ],
         ),
@@ -361,5 +283,63 @@ class checkIN_OUTState extends State<checkIN_OUT> {
     );
   }
 
+  void chech_in_out(String action) async {
+    String url = All_API().baseurl +All_API().api_attendance;
+    SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
 
+    String body =jsonEncode({
+      "id":uniqID,
+      "current_date":date,
+      "latitute": latitude,
+      "longitute": longitude,
+      "area":address,
+      "device":device,
+      "qr_code":result,
+      "action":action});
+    print("phone_body--> " + body);
+
+    Map<String, String> headers = {
+      All_API().key: All_API().keyvalue,
+    };
+    final http.Response response = await http.post(url,body:body,headers: headers);
+    Map<String,dynamic> jasonData = jsonDecode(response.body);
+
+    print("Response :---->"+jasonData.toString());
+    checkINmsg=jasonData["msg"];
+    statusCode=response.statusCode;
+    if (response.statusCode == 200) {
+      startTimer();
+      setState(() {
+        final snackBar = SnackBar(content: Text(checkINmsg,style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.green,);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        attendanceTimeCheckIN=jasonData["checkin_time"];
+        attendanceTimeCheckOut=jasonData["checkout_time"];
+        sharedPreferences.setString("checkin_time", attendanceTimeCheckIN);
+        sharedPreferences.setString("checkout_time", attendanceTimeCheckOut);
+        print("Data Attendance : "+jasonData["msg"]);
+        print("Data Attendance : "+jasonData["checkin_time"]);
+        print("Data Attendance : "+jasonData["checkout_time"]);
+
+      });
+
+
+
+    } else {
+      final snackBar = SnackBar(content: Text(checkINmsg,style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.red,);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+  /*void _showToast(BuildContext context,String msg) {
+    final scaffold = Scaffold.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.green,
+        content: Text("Have a nice Day"),
+        behavior:SnackBarBehavior.floating ,
+        action: SnackBarAction(
+            label: msg!=null?msg:"Please Mark Attendance!!!!!!",
+            textColor: Colors.white, onPressed: scaffold.hideCurrentSnackBar),
+      ),
+    );
+  }*/
 }

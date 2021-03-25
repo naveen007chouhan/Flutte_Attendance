@@ -49,41 +49,66 @@ class _birthdayFeedState extends State<birthdayFeed> {
                 var article = snapshot.data.data[index];
                 print("birthdayimg-->" + path + article.image);
                 print("birthdayname-->" + article.name);
-                return Card(
+                return   Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child:Card(
                     elevation: 10,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                     child: Container(
-                      width: 200,
+                      width: 160,
                       child: InkWell(
                         child: Column(
-                          crossAxisAlignment:CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Stack(
                               alignment: Alignment.center,
                               children: [
-                                Ink.image(
-                                  height:130,
-                                  image: AssetImage(path + article.image),
-                                  fit: BoxFit.contain,),
+                                Container(
+                                  height: 110,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                        image: NetworkImage(path + article.image),
+                                        fit: BoxFit.contain
+                                    ),
+                                  ),
+                                ),
+                                /*ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Ink.image(
+                                    height: 130,
 
+                                    image: NetworkImage(path + article.image),
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),*/
                               ],
                             ),
                             Padding(
-                              padding:  EdgeInsets.only(left: 16,top: 16,right: 16,bottom: 16),
+                              padding: EdgeInsets.only(
+                                  left: 16, top: 16, right: 16, bottom: 16),
                               child: Center(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    Text(
-                                      article.name,
-                                      style: TextStyle(fontSize: 14, color: Colors.orange,fontWeight: FontWeight.bold),
-                                      maxLines: 1,
-                                    ),
-                                    Text(
+                                    Center(child:Text(
+                                article.name,
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.blue[1000],
+                                      fontWeight: FontWeight.bold),
+                                  maxLines: 1,
+                                ),),
+
+                              Center(child:   Text(
                                       article.designation,
-                                      style: TextStyle(fontSize: 12, color: Colors.orange,fontWeight: FontWeight.normal),
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.orange,
+                                          fontWeight: FontWeight.normal),
                                       maxLines: 1,
-                                    ),
+                                    ),),
                                     /*Container(
                                       color: Colors.blue[1000],
                                       width: 300,
@@ -92,7 +117,7 @@ class _birthdayFeedState extends State<birthdayFeed> {
                                       margin: const EdgeInsets.all(1.0),
                                       child:
                                     ),*/
-                                   /* Container(
+                                    /* Container(
                                       color: Colors.blue[1000],
                                       width: 300,
                                       height: 30,
@@ -104,49 +129,63 @@ class _birthdayFeedState extends State<birthdayFeed> {
                                 ),
                               ),
                             ),
-
                           ],
                         ),
                       ),
-                    ));
+                    )));
               });
         } else if (snapshot.hasData == false) {
           return Card(
               elevation: 10,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
               child: Container(
                 width: 200,
                 child: InkWell(
                   child: Column(
-                    crossAxisAlignment:CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Stack(
                         alignment: Alignment.center,
                         children: [
-                          Ink.image(
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Ink.image(
+                              height: 130,
+                              image: AssetImage("assets/ayt.png"),
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                          /*Ink.image(
                             height:130,
                             image: AssetImage("assets/ayt.png"),
-                            fit: BoxFit.contain,),
-
+                            fit: BoxFit.contain,),*/
                         ],
                       ),
                       Padding(
-                        padding:  EdgeInsets.only(left: 16,top: 16,right: 16,bottom: 16),
+                        padding: EdgeInsets.only(
+                            left: 16, top: 16, right: 16, bottom: 16),
                         child: Center(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
                                 "Naveen Chouhan",
-                                style: TextStyle(fontSize: 14, color: Colors.orange,fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.orange,
+                                    fontWeight: FontWeight.bold),
                                 maxLines: 1,
                               ),
                               Text(
                                 "Jr. Android developer",
-                                style: TextStyle(fontSize: 12, color: Colors.orange,fontWeight: FontWeight.normal),
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.orange,
+                                    fontWeight: FontWeight.normal),
                                 maxLines: 1,
                               ),
-                             /* Container(
+                              /* Container(
                                 color: Colors.blue[1000],
                                 width: 300,
                                 height: 30,
@@ -166,7 +205,6 @@ class _birthdayFeedState extends State<birthdayFeed> {
                           ),
                         ),
                       ),
-
                     ],
                   ),
                 ),

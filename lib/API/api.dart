@@ -10,7 +10,7 @@ class All_API {
   final four_error_occurred="Something Error Found";
   final two_error_occurred="No Data Found! ";
   final error_occurred="Server Side Error";
-  final key = 'X-API-KEY';
+  final key = 'x-api-key';
   final keyvalue = 'NODN2D0I7W4V8I2K';
   final FcmId ="NODN2D0I7W4V8I2K";
   final employee_ID="";
@@ -24,7 +24,7 @@ class All_API {
   String baseurl_img="http://adiyogitechnosoft.com/demo_attendance";
   
   String api_tack_dashboard= "employee/track_dashboard/";
-  String api_login= "/employee/employee_login";
+  String api_login= "employee/employee_login";
 
   String api_mark_early= "mark_early";
 

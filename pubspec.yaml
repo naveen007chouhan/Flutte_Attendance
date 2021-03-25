@@ -39,7 +39,7 @@ dependencies:
   dio: ^3.0.10
   image_picker: ^0.6.6+5
   expansion_card: ^0.1.0
-
+  curved_navigation_bar: ^0.3.0
 
 
   flutter:

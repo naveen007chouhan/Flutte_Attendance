@@ -1,3 +1,4 @@
+import 'package:AYT_Attendence/API/api.dart';
 import 'package:AYT_Attendence/Screens/Expenses/track_expenses.dart';
 import 'package:AYT_Attendence/Screens/LoginScreen/login2.dart';
 import 'package:AYT_Attendence/Screens/leavelists/track_leave.dart';
@@ -76,6 +77,8 @@ class CustomDrawer extends StatefulWidget {
 class _CustomDrawerState extends State<CustomDrawer> {
   String name;
   String uniqId;
+  String userphn;
+  String userimg;
   @override
   void initState() {
     // TODO: implement initState
@@ -87,11 +90,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
     setState(() {
       name=sharedPreferences.getString("name");
       uniqId=sharedPreferences.getString("unique_id");
+      userphn=sharedPreferences.getString("phone");
+      userimg=sharedPreferences.getString("image");
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    String path=All_API().baseurl_img+All_API().profile_img_path;
     MediaQueryData mediaQuery = MediaQuery.of(context);
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
@@ -107,15 +113,40 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Image.asset(
-                      "assets/ayt.png",
-                      width: 80,
-                      height: 80,
-                    ),
                     SizedBox(
                       height: 10,
                     ),
-                    Text(name!=null?name:"ADIYOGI",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.orange))
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: userimg!=null?Image.network(
+                        path+userimg,
+                        width: 110,
+                        height: 110,
+                        fit: BoxFit.cover,
+                      ):Image.asset('assets/ayt.png',width: 110,
+                        height: 110,
+                        fit: BoxFit.cover,),
+                      /*child: Image.asset(
+                        "assets/ayt.png",
+                        width: 110.0,
+                        height: 110.0,
+                        fit: BoxFit.fill,
+
+                      ),*/
+                    ),
+                    /*Image.asset(
+                      "assets/ayt.png",
+                      width: 100,
+                      height: 150,
+                    ),*/
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(name!=null?name:"ADIYOGI",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.blue[1000])),
+                    Text(userphn!=null?userphn:"1234567890",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.blue[1000])),
+                    SizedBox(
+                      height: 10,
+                    ),
                   ],
                 )),
             ListTile(
@@ -177,7 +208,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => EarlyCheckOutRequest(),),);
               },
               leading: Icon(Icons.outbond_outlined,color: Colors.orange,),
-              title: Text("Early Checkout Request",style: TextStyle(color: Colors.orange),),
+              title: Text("Early Checkout ",style: TextStyle(color: Colors.orange),),
             ),
             Divider(
               height: 1,

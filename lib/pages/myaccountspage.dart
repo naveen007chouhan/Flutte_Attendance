@@ -15,6 +15,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileThreePageState extends State<ProfileScreen> {
+  bool _load = false;
   String name;
   String uniqId ;
   String user_unique_id ;
@@ -76,6 +77,13 @@ class _ProfileThreePageState extends State<ProfileScreen> {
             style: TextStyle(color: Colors.orange),
           ),
         ),
+        leading: new IconButton(
+          icon: new Icon(
+            Icons.arrow_back_ios,
+            color: Colors.orange,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       backgroundColor: Colors.grey.shade300,
       body: SingleChildScrollView(
@@ -125,23 +133,41 @@ class _ProfileThreePageState extends State<ProfileScreen> {
                               ),
                             ),
                             SizedBox(height: 10.0),
-                            Row(
+                            Center(child:RaisedButton(
+                              child: Text('UpLoad Image'),
+                              color: Colors.orange,
+                              textColor: Colors.white,
+                              elevation: 5,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18.0),
+                                  side: BorderSide(color: Colors.blue[1000])
+                              ),
+                              padding: EdgeInsets.fromLTRB(100, 20, 100, 20),
+                              splashColor: Colors.blue[1000],
+                              onPressed: () async {
+                                //onpressed gets called when the button is tapped.
+                                var imagepicker = await ImagePicker.pickImage(source: ImageSource.gallery);
+                                if(imagepicker!=null){
+                                  setState(() {
+                                    print("profileUpload_imagepicker--> " + imagepicker.path);
+                                    uploadimage=imagepicker ;
+
+                                    profileUpload(uploadimage);
+                                    //
+                                  });
+                                }
+                              },
+                            ),),
+                            /*Row(
                               children: <Widget>[
                                 GestureDetector(
                                   child: Text("Upload Image"),
                                   onTap: () async{
-                                    var imagepicker = await ImagePicker.pickImage(source: ImageSource.gallery);
-                                    if(imagepicker!=null){
-                                      setState(() {
-                                        print("profileUpload_imagepicker--> " + imagepicker.path);
-                                        uploadimage=imagepicker ;
-                                        profileUpload(uploadimage);
-                                      });
-                                    }
+
                                   },
                                 )
                               ],
-                            ),
+                            ),*/
                           ],
                         ),
                       ),
@@ -243,6 +269,7 @@ class _ProfileThreePageState extends State<ProfileScreen> {
 
   void profileUpload(File uploadimage) async {
     //String uni_id="NODS5X5N5V2H2Z";
+    loadingdialog();
     String url = All_API().baseurl +All_API().api_profile+uniqId;
     print("profile image URL--->"+url);
     String filename = uploadimage.path.split("/image_picker").last;
@@ -257,11 +284,13 @@ class _ProfileThreePageState extends State<ProfileScreen> {
 
     if (response.statusCode == 200) {
       setState(() {
+        _load=false;
         Map jsonData=jsonDecode(respStr);
         String path=jsonData['path'];
         String imageSplit=path.split('/').last;
         image=imageSplit.trim();
-
+        final snackBar = SnackBar(content: Text('Your Profile Successfully Updated',style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.green,);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
         print("Uploaded Image--> "+imageSplit);
         print("Uploaded Image--> "+path);
       });
@@ -270,8 +299,21 @@ class _ProfileThreePageState extends State<ProfileScreen> {
     }
     else {
       final snackBar = SnackBar(content: Text('Your Profile Image Not Successfully Updated',style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.red,);
-      //ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
       print("profileUpload_reasonPhrase--> "+response.reasonPhrase);
+    }
+  }
+
+  void loadingdialog() {
+
+    _load=true;
+    if(_load==true){
+      CircularProgressIndicator();
+      final snackBar = SnackBar(content: Text('Uploading Image',style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.red,);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+    }else{
+
     }
   }
 }

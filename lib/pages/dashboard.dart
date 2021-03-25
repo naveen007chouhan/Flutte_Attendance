@@ -72,7 +72,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     var duration=new Duration(seconds: 1);
-    Timer(duration, showData);
+    // Timer(duration, showData);
     setState(() {
       s1= accuuracy_meter!=null?"Your current location is accurate to "+accuuracy_meter:'';
       s2= accuuracyPer!=null?" ,\nGPS accuracy level "+accuuracyPer:'';

@@ -6,6 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
+import 'All_News.dart';
+
 
 class newsFeeds extends StatefulWidget{
   @override
@@ -13,6 +15,7 @@ class newsFeeds extends StatefulWidget{
 }
 
 class newsFeedsState extends State<newsFeeds> {
+  String statuscode;
   Future<Newsmodel>newsdetail() async {
     var endpointUrl = All_API().baseurl + All_API().api_news;
     Map<String, String>  queryParameter={
@@ -26,6 +29,8 @@ class newsFeedsState extends State<newsFeeds> {
         All_API().key: All_API().keyvalue,
       });
       print("News : "+response.body);
+      print("StatusCODE : "+response.statusCode.toString());
+       statuscode=response.statusCode.toString();
       if(response.statusCode==200){
         var jsonString = response.body;
         print("News : "+jsonString);
@@ -61,8 +66,10 @@ class newsFeedsState extends State<newsFeeds> {
               Expanded(
                   flex:1,child: Container(
                   child: GestureDetector(
+
                     onTap: (){
-                      //Navigator.of(context).push(MaterialPageRoute(builder: (context)=>All_News()));
+
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>All_News()));
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -125,28 +132,46 @@ class newsFeedsState extends State<newsFeeds> {
                       );
                     }
                 );
-              }else if(snapshot.data==false){
-                return Card(
-                  elevation: 10,
-                  child: Row(
+              }else if(snapshot.hasData==false){
+                return  Row(
                     children: [
-                      Container(
-                        margin:const EdgeInsets.only(top: 5,left: 20,bottom: 5,right: 0),
-                        child:Image.asset("assets/ayt.png",height: 100,width: 50,),
-                      ),
-                      Container(
-                        width: 200,
-                        alignment: Alignment.topCenter,
-                        margin: const EdgeInsets.only(top: 5,left: 20,bottom: 10,right: 0),
-                        child:Column(
+                      Card(
+                        elevation: 8,
+                        child: Container(
+                          width: 350,
+                          height: 200,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(5),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.white10,
+                                  offset: Offset(0, 20),
+                                  blurRadius: 30.0),
+                              BoxShadow(
+                                  color: Colors.white30,
+                                  offset: Offset(0, 20),
+                                  blurRadius: 30.0)
+                            ],
+                          ),
+                          child:Column(
                             children: [
-                              Text("Tital",style: TextStyle(fontSize: 15,color: Colors.black,),),
-                              Text("Description",style: TextStyle(fontSize: 10,color: Colors.black),),
-                            ]),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ListTile(
+                                  leading: Image.asset("assets/ayt.png",height: 100,width: 50,),
+                                  title: Text("Tital",style: TextStyle(fontSize: 15,color: Colors.black,fontWeight: FontWeight.bold),maxLines: 2,),
+                                  subtitle: Text("Description",style: TextStyle(fontSize: 12,color: Colors.black),maxLines: 2,),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
-                  ),
-                );
+                  );
               }
               else
                 return Center(child: CircularProgressIndicator());

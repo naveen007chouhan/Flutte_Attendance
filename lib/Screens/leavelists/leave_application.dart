@@ -180,10 +180,10 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
           // resizeToAvoidBottomPadding: true,
           resizeToAvoidBottomInset: true,
           appBar: AppBar(
-            title: Text('Leave Application'),
+            title: Text('Leave Application',style: TextStyle(color: Colors.orange)),
             backgroundColor: Colors.blue[1000],
             leading: new IconButton(
-              icon: new Icon(Icons.arrow_back_ios),
+              icon: new Icon(Icons.arrow_back_ios,color: Colors.orange,),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
@@ -197,26 +197,13 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Center(
-                                  child: Text(
-                                    "Available Leaves",
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: list == null
-                                      ? LinearProgressIndicator()
-                                      : Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                    children: list,
-                                  ),
-                                ),
                                 Row(
                                   mainAxisAlignment:
                                   MainAxisAlignment.spaceAround,
                                   children: <Widget>[
-                                    Text('From'),
+                                    Text('From',style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold)),
                                     Container(
                                         padding: const EdgeInsets.fromLTRB(
                                             0, 5, 0, 20),
@@ -243,7 +230,7 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
                                                       child: Row(
                                                         children: <Widget>[
                                                           Text(
-                                                            dateFrom!=null?dateFrom:"",
+                                                            dateFrom!=null?dateFrom:"Start Date",
                                                             style: TextStyle(
                                                               color: Colors.blue,
                                                               fontSize: 16.0,
@@ -259,7 +246,9 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
                                           ),
                                         )
                                     ),
-                                    Text('To'),
+                                    Text('To',style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold)),
                                     Container(
                                         padding: const EdgeInsets.fromLTRB(
                                             0, 5, 0, 20),
@@ -286,7 +275,7 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
                                                       child: Row(
                                                         children: <Widget>[
                                                           Text(
-                                                            dateTo!=null?dateTo:"",
+                                                            dateTo!=null?dateTo:"End Date",
                                                             style: TextStyle(
                                                                 color: Colors.blue,
                                                                 fontSize: 16.0),
@@ -330,13 +319,17 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
                                 Container(
                                   padding:
                                   const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                                  child: Text('Type of leave'),
+                                  child: Text('Type of leave',style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold)),
                                 ),
                                 Column(
                                   children: <Widget>[
                                     DropdownButton(
                                       isExpanded: true,
-                                      hint: Text("Select Expenses"),
+                                      hint: Text("Select Expenses",style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold)),
                                       value: selectedvalue,
                                       items: ExpensesTypeList.map((explist) {
                                         return DropdownMenuItem(
@@ -362,7 +355,7 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
                                   onSubmitted: _giveData(_textEditingController),
                                   decoration: new InputDecoration(
                                     labelText:
-                                    "Message for Management (Optional)",
+                                    "Reason",
                                     enabledBorder: UnderlineInputBorder(
                                       borderSide:
                                       BorderSide(color: Colors.black54),
@@ -381,9 +374,9 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 20.0, horizontal: 16.0),
-                                          child: Text("APPLY LEAVE",style: TextStyle(color: Colors.orange),),
+                                          child: Text("APPLY LEAVE",style: TextStyle(color: Colors.white),),
                                         ),
-                                        color: Colors.blue[1000],
+                                        color: Colors.orange,
                                         hoverColor: Colors.blue[1000],
                                         hoverElevation: 40.0,
                                         onPressed: () {

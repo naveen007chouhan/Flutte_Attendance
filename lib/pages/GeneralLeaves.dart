@@ -21,7 +21,13 @@ class _GeneralLeaveState extends State<GeneralLeave> {
     Map<String, String> headers = {
       All_API().key: All_API().keyvalue,
     };
-    var response = await http.get(endpointUrl,headers: headers);
+    Map<String, String> queryParameter = {
+      'status': '1',
+    };
+    String queryString = Uri(queryParameters: queryParameter).query;
+    var requestUrl = endpointUrl + '?' + queryString;
+    print("GeneralLeave_URl--> "+requestUrl);
+    var response = await http.get(requestUrl,headers: headers);
     var jasonData = jsonDecode(response.body);
     var msg=jasonData['msg'];
     StatusCode=response.statusCode;
@@ -55,7 +61,6 @@ class _GeneralLeaveState extends State<GeneralLeave> {
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery = MediaQuery.of(context);
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         title: Container(
           child: Text(
@@ -63,6 +68,13 @@ class _GeneralLeaveState extends State<GeneralLeave> {
         ),
         automaticallyImplyLeading: false,
         backgroundColor: Colors.blue[1000],
+        leading: new IconButton(
+          icon: new Icon(
+            Icons.arrow_back_ios,
+            color: Colors.orange,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Container(
         child: Row(

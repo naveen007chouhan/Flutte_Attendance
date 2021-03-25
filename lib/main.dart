@@ -1,7 +1,10 @@
 import 'package:AYT_Attendence/Screens/Splash/splashscreen.dart';
 import 'package:AYT_Attendence/Screens/notification/NotificationScreen.dart';
+import 'package:AYT_Attendence/pages/FCM.dart';
 import 'package:AYT_Attendence/pages/GeneralLeaves.dart';
 import 'package:AYT_Attendence/pages/trackattendance.dart';
+import 'package:AYT_Attendence/sidebar/TabItem.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -28,9 +31,31 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
+  String _message = '';
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+  void getMessage(){
+    _firebaseMessaging.getToken().then((token) => print(token));
+    _firebaseMessaging.getToken().then((token) {
+      String fcmID  = token.toString();
+      sharedPreferences.setString('fcmID', fcmID);
+      // do whatever you want with the token here
+    });
+    _firebaseMessaging.configure(
+        onMessage: (Map<String, dynamic> message) async {
+          print('on message $message');
+          setState(() => _message = message["notification"]["title"]);
+        }, onResume: (Map<String, dynamic> message) async {
+      print('on resume $message');
+      setState(() => _message = message["notification"]["title"]);
+    }, onLaunch: (Map<String, dynamic> message) async {
+      print('on launch $message');
+      setState(() => _message = message["notification"]["title"]);
+    });
+  }
 
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
   SharedPreferences sharedPreferences;
@@ -84,13 +109,14 @@ class _MyHomePageState extends State<MyHomePage> {
     _getAddressFromLatLng();
     _getCurrentLocation();
     getCurrentDate();
+    getMessage();
     super.initState();
   }
 
   getCurrentDate()async{
     DateTime now = new DateTime.now();
     DateTime date = new DateTime(now.year, now.month, now.day );
-    print("Today Date : "+date.toString());
+    //print("Today Date : "+date.toString());
     setState(() {
       //sharedPreferences.setString("date", date.toString());
     });
@@ -102,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Stack(
             children: <Widget>[
               Scaffold(
-                  /*appBar: AppBar(
+                /*appBar: AppBar(
                     title: Text('Raindrop App'),
                   ),*/
                   body: SplashScreenPage()
@@ -122,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
         .then((Position position) {
       setState(() {
         _currentPosition = position;
-        print("Position : "+_currentPosition.toString());
+        //print("Position : "+_currentPosition.toString());
         sharedPreferences.setString("lat", _currentPosition.latitude.toString());
         sharedPreferences.setString("long", _currentPosition.longitude.toString());
       });
@@ -143,7 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _currentAddress =
         "${place.name}, ${place.subLocality}, ${place.locality}, ${place.administrativeArea}, ${place.postalCode}, ${place.country}";
-        print("Address : "+_currentAddress);
+        //print("Address : "+_currentAddress);
         sharedPreferences.setString("address", _currentAddress);
       });
     } catch (e) {
