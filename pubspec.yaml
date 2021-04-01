@@ -40,8 +40,6 @@ dependencies:
   image_picker: ^0.6.6+5
   expansion_card: ^0.1.0
   curved_navigation_bar: ^0.3.0
-
-
   flutter:
     sdk: flutter
 
@@ -84,6 +82,17 @@ flutter:
   # https://flutter.dev/assets-and-images/#from-packages
 
   # To add custom fonts to your application, add a fonts section here,
+  fonts:
+    - family: Raleway
+      fonts:
+        - asset: fonts/RockfordSans-Light.otf
+
+          style: italic
+#    - family: RobotoMono
+#      fonts:
+#        - asset: fonts/RobotoMono-Regular.ttf
+#        - asset: fonts/RobotoMono-Bold.ttf
+#          weight: 700
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For

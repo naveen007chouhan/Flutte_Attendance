@@ -83,13 +83,13 @@ class _MyHomePageState extends State<MyTrackExpenses> {
             child: Text(
               'Expenses List', style: TextStyle(color: Colors.orange),),
           ),
-          leading: new IconButton(
+          /*leading: new IconButton(
             icon: new Icon(
               Icons.arrow_back_ios,
               color: Colors.orange,
             ),
             onPressed: () => Navigator.of(context).pop(),
-          ),),
+          ),*/),
         body: Container(
           child: Column(
             children: [

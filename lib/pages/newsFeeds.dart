@@ -31,6 +31,7 @@ class newsFeedsState extends State<newsFeeds> {
       print("News : "+response.body);
       print("StatusCODE : "+response.statusCode.toString());
        statuscode=response.statusCode.toString();
+      print("StatusCODE_News : "+statuscode);
       if(response.statusCode==200){
         var jsonString = response.body;
         print("News : "+jsonString);
@@ -45,37 +46,52 @@ class newsFeedsState extends State<newsFeeds> {
 
   @override
   Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size;
     return Column(
       children: [
         Expanded(
           flex: 2,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                flex:3,
-                child: Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text('News Feeds',
-                      style: TextStyle(
-                        fontSize: 20, color: Colors.blue[1000],),
-                    ),
+              Container(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('News Feeds',
+                    style: TextStyle(
+                      fontSize: 20, color: Colors.blue[1000],),
                   ),
                 ),
               ),
-              Expanded(
-                  flex:1,child: Container(
-                  child: GestureDetector(
-
-                    onTap: (){
-
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>All_News()));
-                    },
-                    child: Padding(
+              Container(
+                  child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Icon(Icons.remove_red_eye,size: 30,),
+                      child: RaisedButton(
+                        child: Text('View All'),
+                        color: Colors.orange,
+                        textColor: Colors.white,
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                            side: BorderSide(color: Colors.blue[1000])
+                        ),
+                        // padding: EdgeInsets.fromLTRB(100, 20, 100, 20),
+                        splashColor: Colors.blue[1000],
+                        onPressed: () async {
+                          //onpressed gets called when the button is tapped.
+                          print("StatusCODE_onCheck : "+statuscode);
+                          // ignore: unrelated_type_equality_checks
+                          if(statuscode == 200){
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>All_News()));
+                          }else{
+                            final snackBar = SnackBar(content: Text('No Data Found',style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.red,);
+                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          }
+                        },
+                      ),
                     ),
-                  ))),
+                  ),
+
             ],
           ),
         ),
@@ -96,7 +112,7 @@ class newsFeedsState extends State<newsFeeds> {
                           Card(
                             elevation: 8,
                             child: Container(
-                              width: 350,
+                              width: screenSize.width * 0.7,
                               height: 200,
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -133,45 +149,46 @@ class newsFeedsState extends State<newsFeeds> {
                     }
                 );
               }else if(snapshot.hasData==false){
-                return  Row(
-                    children: [
-                      Card(
-                        elevation: 8,
-                        child: Container(
-                          width: 350,
-                          height: 200,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(5),
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.white10,
-                                  offset: Offset(0, 20),
-                                  blurRadius: 30.0),
-                              BoxShadow(
-                                  color: Colors.white30,
-                                  offset: Offset(0, 20),
-                                  blurRadius: 30.0)
-                            ],
+                return Row(
+                  children: [
+                    Card(
+                      elevation: 8,
+                      child: Container(
+                        width: screenSize.width * 0.7,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(5),
                           ),
-                          child:Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ListTile(
-                                  leading: Image.asset("assets/ayt.png",height: 100,width: 50,),
-                                  title: Text("Tital",style: TextStyle(fontSize: 15,color: Colors.black,fontWeight: FontWeight.bold),maxLines: 2,),
-                                  subtitle: Text("Description",style: TextStyle(fontSize: 12,color: Colors.black),maxLines: 2,),
-                                ),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.white10,
+                                offset: Offset(0, 20),
+                                blurRadius: 30.0),
+                            BoxShadow(
+                                color: Colors.white30,
+                                offset: Offset(0, 20),
+                                blurRadius: 30.0)
+                          ],
+                        ),
+                        child:Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                leading: Image.asset("assets/ayt.png",height: 100,width: 50,),
+                                title: Text("Tital",style: TextStyle(fontSize: 15,color: Colors.black,fontWeight: FontWeight.bold),maxLines: 2,),
+                                subtitle: Text("Description",style: TextStyle(fontSize: 12,color: Colors.black),maxLines: 2,),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  );
+                    ),
+                  ],
+                );
+
               }
               else
                 return Center(child: CircularProgressIndicator());

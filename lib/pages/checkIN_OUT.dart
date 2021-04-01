@@ -153,15 +153,21 @@ class checkIN_OUTState extends State<checkIN_OUT> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        SizedBox(
+          height: 5,
+        ),
         Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Text("Woring Hour's : " , style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+            Text("Woring Hour's : " , style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
             Text(timeHour==null?'00 : ':timeHour.toString()+':', style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
             Text(timeMinuts==null?'00 : ':timeMinuts.toString()+':', style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
             Text(timeSecond==null?'00':timeSecond.toString(), style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
           ],
+        ),
+        SizedBox(
+          height: 10,
         ),
         Row(
           mainAxisSize: MainAxisSize.min,
@@ -173,23 +179,14 @@ class checkIN_OUTState extends State<checkIN_OUT> {
               child: Card(
                 elevation: 2,
                 child: Container(
-                  height: 100, //10 for example
+                  height: 90, //10 for example
                   margin:const EdgeInsets.only(top: 5,left: 5,bottom: 5,right: 5),
                   decoration: BoxDecoration(
                     color: Colors.green[50],
                     borderRadius: BorderRadius.all(
                       Radius.circular(5),
                     ),
-                    /* boxShadow: [
-                BoxShadow(
-                    color: Colors.green[200],
-                    offset: Offset(0, 1),
-                    blurRadius: 5.0),
-                BoxShadow(
-                    color: Colors.green[100],
-                    offset: Offset(0, 1),
-                    blurRadius: 5.0)
-              ],*/
+
                   ),//10 for example
                   child: InkWell(
                     onTap: (){
@@ -201,17 +198,17 @@ class checkIN_OUTState extends State<checkIN_OUT> {
                         Container(
                             height: 100,
                             width: 60,
-                            child: Image.asset('assets/check_in.png',height: 40,width: 40,)
+                            child: Image.asset('assets/check_in.png',height: 20,width: 20,)
                         ),
                         Container(
                           margin: EdgeInsets.only(
                               top: 20, left: 10, right: 0, bottom: 0),
                           child: Column(
                             children: [
-                              Text('CHECK IN',style: TextStyle(fontSize: 15,fontWeight:FontWeight.bold,color: Colors.blue[1000])),
+                              Text('CHECK IN',style: TextStyle(fontSize: 12,fontWeight:FontWeight.w100,color: Colors.blue[1000])),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(attendanceTimeCheckIN!=null?attendanceTimeCheckIN:"Pending",style: TextStyle(fontSize: 15,fontWeight:FontWeight.bold,color: Colors.blue[1000])),
+                                child: Text(attendanceTimeCheckIN!=null?attendanceTimeCheckIN:"Pending",style: TextStyle(fontSize: 14,fontWeight:FontWeight.bold,color: Colors.blue[1000])),
                               ),
                             ],
                           ),
@@ -228,23 +225,14 @@ class checkIN_OUTState extends State<checkIN_OUT> {
               child: Card(
                 elevation: 2,
                 child: Container(
-                  height: 100, //10 for example
+                  height: 90, //10 for example
                   margin:const EdgeInsets.only(top: 5,left: 5,bottom: 5,right: 5),
                   decoration: BoxDecoration(
                     color: Colors.red[50],
                     borderRadius: BorderRadius.all(
                       Radius.circular(5),
                     ),
-                    /* boxShadow: [
-                BoxShadow(
-                    color: Colors.red[200],
-                    offset: Offset(0, 1),
-                    blurRadius: 5.0),
-                BoxShadow(
-                    color: Colors.red[100],
-                    offset: Offset(0, 1),
-                    blurRadius: 5.0)
-              ],*/
+
                   ),//10 for //10 for example
                   child: InkWell(
                     onTap: (){
@@ -256,17 +244,17 @@ class checkIN_OUTState extends State<checkIN_OUT> {
                         Container(
                             height: 100,
                             width: 60,
-                            child: Image.asset('assets/check_out.png',height: 40,width: 40,)
+                            child: Image.asset('assets/check_out.png',height: 20,width: 20,)
                         ),
                         Container(
                           margin: EdgeInsets.only(
                               top: 20, left: 10, right: 0, bottom: 0),
                           child: Column(
                             children: [
-                              Text('CHECK OUT',style: TextStyle(fontSize: 15,fontWeight:FontWeight.bold,color: Colors.blue[1000])),
+                              Text('CHECK OUT',style: TextStyle(fontSize: 12,fontWeight:FontWeight.w100,color: Colors.blue[1000])),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(attendanceTimeCheckOut!=null?attendanceTimeCheckOut:"Pending",style: TextStyle(fontSize: 15,fontWeight:FontWeight.bold,color: Colors.blue[1000])),
+                                child: Text(attendanceTimeCheckOut!=null?attendanceTimeCheckOut:"Pending",style: TextStyle(fontSize: 14,fontWeight:FontWeight.bold,color: Colors.blue[1000])),
                               ),
                             ],
                           ),

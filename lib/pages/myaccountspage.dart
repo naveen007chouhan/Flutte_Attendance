@@ -67,7 +67,7 @@ class _ProfileThreePageState extends State<ProfileScreen> {
     String path=All_API().baseurl_img+All_API().profile_img_path;
     var duration=new Duration(seconds: 1);
     Timer(duration, showData);
-    return Scaffold(
+    return SafeArea(child: Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue[1000],
         title: Container(
@@ -77,13 +77,13 @@ class _ProfileThreePageState extends State<ProfileScreen> {
             style: TextStyle(color: Colors.orange),
           ),
         ),
-        leading: new IconButton(
+        /*leading: new IconButton(
           icon: new Icon(
             Icons.arrow_back_ios,
             color: Colors.orange,
           ),
           onPressed: () => Navigator.of(context).pop(),
-        ),
+        ),*/
       ),
       backgroundColor: Colors.grey.shade300,
       body: SingleChildScrollView(
@@ -228,7 +228,7 @@ class _ProfileThreePageState extends State<ProfileScreen> {
           ],
         ),
       ),
-    );
+    ),);
   }
   void department_user_id(String departmentID) async {
     var endpointUrl = All_API().baseurl+All_API().api_department + departmentID;

@@ -11,10 +11,10 @@
 
 
     <application
-        android:usesCleartextTraffic="true"
         android:name="io.flutter.app.FlutterApplication"
+        android:icon="@mipmap/ayt"
         android:label="AYT_Attendence"
-        android:icon="@mipmap/ayt">
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

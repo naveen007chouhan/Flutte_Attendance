@@ -70,297 +70,30 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        /*height: SizeConfig.safeBlockVertical * 100, //10 for example
-        width: SizeConfig.safeBlockHorizontal * 100, *///10 for example
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: FutureBuilder<TrackDashboardModel>(
-            future: trackdashStudent(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: snapshot.data.data.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      var article = snapshot.data.data[index];
-                      return Row(
-                        children: [
-                          Container(
-                            width: 180,
-                            margin:const EdgeInsets.only(top: 5,left: 5,bottom: 5,right: 5),
-                            decoration: BoxDecoration(
-                              color: Colors.white70,
-                              border: Border.all(
-                                    color: Colors.orange,  // red as border color
-                                  ),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(5),
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.white54,
-                                    offset: Offset(0, 5),
-                                    blurRadius: 10.0),
-                                BoxShadow(
-                                    color: Colors.white60,
-                                    offset: Offset(0, 5),
-                                    blurRadius: 10.0)
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Row(
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Expanded(flex:2,child: Padding(
-                                          padding:
-                                          const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              article.counterRecord[index]
-                                                  .lateCheckin
-                                                  .toString(),
-                                              style: TextStyle(
-                                                  fontSize: 30,
-                                                  color: Colors.red,
-                                                  fontWeight:
-                                                  FontWeight.bold),
-                                            ),
-                                          ),
-                                        ),),
-                                        Expanded(flex:2,child: Padding(
-                                          padding:
-                                          const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            alignment:
-                                            Alignment.bottomCenter,
-                                            child: Padding(
-                                              padding:
-                                              const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                "USED",
-                                                style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: Colors.black,
-                                                    fontWeight:
-                                                    FontWeight.bold),
-                                              ),
-                                            ),
-                                          ),
-                                        ),),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              "Late CheckIn",
-                                              style: TextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.black,
-                                                  fontWeight:
-                                                  FontWeight.bold),
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            child: Column(
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(
-                                                          8.0),
-                                                  child: Center(
-                                                      child: Text(
-                                                    article
-                                                        .counterRecord[
-                                                            index]
-                                                        .totalLateCheckin
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        fontSize: 25,
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                        FontWeight.bold),
-                                                  )),
-                                                ),
-                                                Center(
-                                                    child: Text(
-                                                  "ALLOWED",
-                                                  style: TextStyle(
-                                                      fontSize: 10,
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                      FontWeight.bold),
-                                                ))
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            width: 180,
-                            margin:const EdgeInsets.only(top: 5,left: 5,bottom: 5,right: 5),
-                            decoration: BoxDecoration(
-                              color: Colors.white70,
-                              border: Border.all(
-                                color: Colors.orange,  // red as border color
-                              ),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(5),
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.white54,
-                                    offset: Offset(0, 5),
-                                    blurRadius: 10.0),
-                                BoxShadow(
-                                    color: Colors.white60,
-                                    offset: Offset(0, 5),
-                                    blurRadius: 10.0)
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Row(
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Expanded(flex:2,child:Padding(
-                                          padding:
-                                          const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              article.counterRecord[index]
-                                                  .earlyCheckout
-                                                  .toString(),
-                                              style: TextStyle(
-                                                  fontSize: 30,
-                                                  color: Colors.red,
-                                                  fontWeight:
-                                                  FontWeight.bold),
-                                            ),
-                                          ),
-                                        ),),
-                                        Expanded(flex:2,child:Padding(
-                                          padding:
-                                          const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            alignment:
-                                            Alignment.bottomCenter,
-                                            child: Padding(
-                                              padding:
-                                              const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                "USED",
-                                                style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: Colors.black,
-                                                    fontWeight:
-                                                    FontWeight.bold),
-                                              ),
-                                            ),
-                                          ),
-                                        ),),
-
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              "Early CheckOut",
-                                              style: TextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.black,
-                                                  fontWeight:
-                                                  FontWeight.bold),
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            child: Column(
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(
-                                                          8.0),
-                                                  child: Center(
-                                                      child: Text(
-                                                    article
-                                                        .counterRecord[
-                                                            index]
-                                                        .totalEarlyCheckout
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        fontSize: 25,
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                        FontWeight.bold),
-                                                  )),
-                                                ),
-                                                Center(
-                                                    child: Text(
-                                                  "ALLOWED",
-                                                  style: TextStyle(
-                                                      fontSize: 10,
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                      FontWeight.bold),
-                                                ))
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      );
-                    });
-              } else if (snapshot.hasData == false) {
+    var screenSize = MediaQuery.of(context).size;
+    return FutureBuilder<TrackDashboardModel>(
+      future: trackdashStudent(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+              shrinkWrap: true,
+              itemCount: snapshot.data.data.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                var article = snapshot.data.data[index];
                 return Row(
-                  children: [
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    // Expanded(flex:2,child: ),
+                    // Expanded(flex:2,child: )
+
                     Container(
-                      width: 180,
-                      margin:const EdgeInsets.only(top: 5,left: 5,bottom: 5,right: 5),
+                      margin: new EdgeInsets.symmetric(horizontal: 5.0),
+                      height: MediaQuery.of(context).size.height,
                       decoration: BoxDecoration(
                         color: Colors.white70,
                         border: Border.all(
-                          color: Colors.orange,  // red as border color
+                          color: Colors.orange, // red as border color
                         ),
                         borderRadius: BorderRadius.all(
                           Radius.circular(5),
@@ -382,110 +115,116 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
                             children: [
                               Column(
                                 children: [
-                                  Expanded(flex:2,child: Padding(
-                                    padding:
-                                    const EdgeInsets.all(8.0),
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "0",
-                                        style: TextStyle(
-                                            fontSize: 30,
-                                            color: Colors.red,
-                                            fontWeight:
-                                            FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),),
-                                  Expanded(flex:2,child:Padding(
-                                    padding:
-                                    const EdgeInsets.all(8.0),
-                                    child: Container(
-                                      alignment:
-                                      Alignment.bottomCenter,
-                                      child: Padding(
-                                        padding:
-                                        const EdgeInsets.all(8.0),
+                                  Expanded(
+                                    flex: 4,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        alignment: Alignment.center,
                                         child: Text(
-                                          "USED",
+                                          article
+                                              .counterRecord[index].lateCheckin
+                                              .toString(),
                                           style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.black,
-                                              fontWeight:
-                                              FontWeight.bold),
+                                              fontSize: 30,
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold),
                                         ),
                                       ),
                                     ),
-                                  ),),
-
-
+                                  ),
+                                  Expanded(
+                                    flex: 4,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        alignment: Alignment.bottomCenter,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            "USED",
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                               Column(
                                 children: [
-                                  Padding(
-                                    padding:
-                                    const EdgeInsets.all(8.0),
+                                  Expanded(
+                                    flex: 1,
                                     child: Container(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "Late CheckIn",
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            color: Colors.black,
-                                            fontWeight:
-                                            FontWeight.bold),
+                                      padding: new EdgeInsets.all(8.0),
+                                      width: screenSize.width * 0.3,
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            "Late CheckIn",
+                                            style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
-                                  Padding(
-                                    padding:
-                                    const EdgeInsets.all(8.0),
+                                  Expanded(
+                                    flex: 2,
                                     child: Container(
-                                      alignment: Alignment.center,
-                                      child: Column(
+                                      child: Row(
                                         children: [
-                                          Padding(
-                                            padding:
-                                            const EdgeInsets.all(
-                                                8.0),
-                                            child: Center(
-                                                child: Text(
-                                                  "3",
-                                                  style: TextStyle(
-                                                      fontSize: 25,
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                      FontWeight.bold),
-                                                )),
+                                          Column(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                const EdgeInsets.all(8.0),
+                                                child: Center(
+                                                    child: Text(
+                                                      article.counterRecord[index]
+                                                          .totalLateCheckin
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                          fontSize: 25,
+                                                          color: Colors.black,
+                                                          fontWeight:
+                                                          FontWeight.bold),
+                                                    )),
+                                              ),
+                                              Center(
+                                                  child: Text(
+                                                    "ALLOWED",
+                                                    style: TextStyle(
+                                                        fontSize: 10,
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                        FontWeight.bold),
+                                                  ))
+                                            ],
                                           ),
-                                          Center(
-                                              child: Text(
-                                                "ALLOWED",
-                                                style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: Colors.black,
-                                                    fontWeight:
-                                                    FontWeight.bold),
-                                              ))
                                         ],
                                       ),
                                     ),
                                   ),
                                 ],
-                              )
+                              ),
                             ],
                           ),
                         ],
                       ),
                     ),
                     Container(
-                      width: 180,
-                      margin:const EdgeInsets.only(top: 5,left: 5,bottom: 5,right: 5),
+                      margin: new EdgeInsets.symmetric(horizontal: 5.0),
+                      height: MediaQuery.of(context).size.height,
                       decoration: BoxDecoration(
                         color: Colors.white70,
                         border: Border.all(
-                          color: Colors.orange,  // red as border color
+                          color: Colors.orange, // red as border color
                         ),
                         borderRadius: BorderRadius.all(
                           Radius.circular(5),
@@ -507,97 +246,104 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
                             children: [
                               Column(
                                 children: [
-                                  Expanded(flex:2,child:Padding(
-                                    padding:
-                                    const EdgeInsets.all(8.0),
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "0",
-                                        style: TextStyle(
-                                            fontSize: 30,
-                                            color: Colors.red,
-                                            fontWeight:
-                                            FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),),
-                                  Expanded(flex:2,child:Padding(
-                                    padding:
-                                    const EdgeInsets.all(8.0),
-                                    child: Container(
-                                      alignment:
-                                      Alignment.bottomCenter,
-                                      child: Padding(
-                                        padding:
-                                        const EdgeInsets.all(8.0),
+                                  Expanded(
+                                    flex: 4,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        alignment: Alignment.center,
                                         child: Text(
-                                          "USED",
+                                          article.counterRecord[index]
+                                              .earlyCheckout
+                                              .toString(),
                                           style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.black,
-                                              fontWeight:
-                                              FontWeight.bold),
+                                              fontSize: 30,
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold),
                                         ),
                                       ),
                                     ),
-                                  ),),
-
+                                  ),
+                                  Expanded(
+                                    flex: 4,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        alignment: Alignment.bottomCenter,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            "USED",
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                               Column(
                                 children: [
-                                  Padding(
-                                    padding:
-                                    const EdgeInsets.all(8.0),
+                                  Expanded(
+                                    flex: 1,
                                     child: Container(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "Early CheckOut",
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            color: Colors.black,
-                                            fontWeight:
-                                            FontWeight.bold),
+                                      padding: new EdgeInsets.all(8.0),
+                                      width: screenSize.width * 0.3,
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            "Early CheckOut",
+                                            style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
-                                  Padding(
-                                    padding:
-                                    const EdgeInsets.all(8.0),
+                                  Expanded(
+                                    flex: 2,
                                     child: Container(
-                                      alignment: Alignment.center,
-                                      child: Column(
+                                      child: Row(
                                         children: [
-                                          Padding(
-                                            padding:
-                                            const EdgeInsets.all(
-                                                8.0),
-                                            child: Center(
-                                                child: Text(
-                                                  "3",
-                                                  style: TextStyle(
-                                                      fontSize: 25,
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                      FontWeight.bold),
-                                                )),
+                                          Column(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                const EdgeInsets.all(8.0),
+                                                child: Center(
+                                                    child: Text(
+                                                      article.counterRecord[index]
+                                                          .totalEarlyCheckout
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                          fontSize: 25,
+                                                          color: Colors.black,
+                                                          fontWeight:
+                                                          FontWeight.bold),
+                                                    )),
+                                              ),
+                                              Center(
+                                                  child: Text(
+                                                    "ALLOWED",
+                                                    style: TextStyle(
+                                                        fontSize: 10,
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                        FontWeight.bold),
+                                                  ))
+                                            ],
                                           ),
-                                          Center(
-                                              child: Text(
-                                                "ALLOWED",
-                                                style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: Colors.black,
-                                                    fontWeight:
-                                                    FontWeight.bold),
-                                              ))
                                         ],
                                       ),
                                     ),
                                   ),
                                 ],
-                              )
+                              ),
                             ],
                           ),
                         ],
@@ -605,12 +351,273 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
                     ),
                   ],
                 );
-              } else
-                return Center(child: CircularProgressIndicator());
-            },
-          ),
-        ),
-      ),
+              });
+        } else if (snapshot.hasData == false) {
+          return ListView(
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  // Expanded(flex:2,child: ),
+                  // Expanded(flex:2,child: )
+
+                  Container(
+                    margin: new EdgeInsets.symmetric(horizontal: 5.0),
+                    height: MediaQuery.of(context).size.height,
+                    decoration: BoxDecoration(
+                      color: Colors.white70,
+                      border: Border.all(
+                        color: Colors.orange, // red as border color
+                      ),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(5),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.white54,
+                            offset: Offset(0, 5),
+                            blurRadius: 10.0),
+                        BoxShadow(
+                            color: Colors.white60,
+                            offset: Offset(0, 5),
+                            blurRadius: 10.0)
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Row(
+                          children: [
+                            Column(
+                              children: [
+                                Expanded(
+                                  flex: 4,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        "0",
+                                        style: TextStyle(
+                                            fontSize: 30,
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 4,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          "USED",
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    padding: new EdgeInsets.all(8.0),
+                                    width: screenSize.width * 0.3,
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          "Late CheckIn",
+                                          style: TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(
+                                    child: Row(
+                                      children: [
+                                        Column(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Center(
+                                                  child: Text(
+                                                    "5",
+                                                    style: TextStyle(
+                                                        fontSize: 25,
+                                                        color: Colors.black,
+                                                        fontWeight: FontWeight.bold),
+                                                  )),
+                                            ),
+                                            Center(
+                                                child: Text(
+                                                  "ALLOWED",
+                                                  style: TextStyle(
+                                                      fontSize: 10,
+                                                      color: Colors.black,
+                                                      fontWeight: FontWeight.bold),
+                                                ))
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: new EdgeInsets.symmetric(horizontal: 5.0),
+                    height: MediaQuery.of(context).size.height,
+                    decoration: BoxDecoration(
+                      color: Colors.white70,
+                      border: Border.all(
+                        color: Colors.orange, // red as border color
+                      ),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(5),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.white54,
+                            offset: Offset(0, 5),
+                            blurRadius: 10.0),
+                        BoxShadow(
+                            color: Colors.white60,
+                            offset: Offset(0, 5),
+                            blurRadius: 10.0)
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Row(
+                          children: [
+                            Column(
+                              children: [
+                                Expanded(
+                                  flex: 4,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        "0",
+                                        style: TextStyle(
+                                            fontSize: 30,
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 4,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          "USED",
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    padding: new EdgeInsets.all(8.0),
+                                    width: screenSize.width * 0.3,
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          "Early CheckOut",
+                                          style: TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(
+                                    child: Row(
+                                      children: [
+                                        Column(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Center(
+                                                  child: Text(
+                                                    "5",
+                                                    style: TextStyle(
+                                                        fontSize: 25,
+                                                        color: Colors.black,
+                                                        fontWeight: FontWeight.bold),
+                                                  )),
+                                            ),
+                                            Center(
+                                                child: Text(
+                                                  "ALLOWED",
+                                                  style: TextStyle(
+                                                      fontSize: 10,
+                                                      color: Colors.black,
+                                                      fontWeight: FontWeight.bold),
+                                                ))
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            ],
+          );
+        } else
+          return Center(child: CircularProgressIndicator());
+      },
     );
   }
 }

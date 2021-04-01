@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:AYT_Attendence/API/api.dart';
 import 'package:AYT_Attendence/Screens/Expenses/expenses_application.dart';
 import 'package:AYT_Attendence/Screens/leavelists/model/TrackLeaveModel.dart';
+import 'package:AYT_Attendence/Screens/leavelists/track_leave.dart';
 import 'package:AYT_Attendence/model/LeaveModel.dart';
 import 'package:AYT_Attendence/pages/dashboard.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +45,7 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
     // TODO: implement initState
     getData();
     super.initState();
-    loadStudent();
+
   }
   getData()async{
     SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
@@ -58,6 +59,7 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
       address=sharedPreferences.getString("address");
       device=sharedPreferences.getString("device_id");
       print("UNIQ ID Dasboad--->"+uniqID);
+      loadStudent(uniqID);
     });
   }
 
@@ -102,7 +104,7 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
     String url = All_API().baseurl +All_API().api_apply_leave;
     print("leave_urlbody--> " + url);
     String body =jsonEncode({
-      "employee_id": employeeID,
+      "employee_id": uniqID,
       "leave_type_id": leaveID,
       "from_date":dateFrom ,"to_date": dateTo,
       "reason": msg,"half_day": "0"});
@@ -116,33 +118,24 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
     String statusCode = response.statusCode.toString();
     print("bodyss--> " + bodydetial.toString()+"  ///  "+statusCode);
     checkINmsg=jasonData["msg"];
-    _showToast(context,checkINmsg);
-    final snackBar = SnackBar(content: Text('Leave Successfully Apply',style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.green,);
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    if (response.statusCode == 200) {
-      // FocusScope.of(context).requestFocus(focusNode);
+    // _showToast(context,checkINmsg);
+      final snackBar = SnackBar(content: Text(checkINmsg,style: TextStyle(fontWeight: FontWeight.bold),));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-      Navigator.pushReplacement(
+    if (response.statusCode == 200) {
+      Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => Dashboard()));
-      setState(() {
-
-      });
+              builder: (context) =>
+                  MyTrackLeave()));
     } else {
-      // FocusScope.of(context).requestFocus(focusNode);
-      final snackBar = SnackBar(content: Text('Leave Not Successfully Apply',style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.red,);
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      setState(() {
 
-      });
     }
   }
-  Future loadStudent() async {
+  Future loadStudent(String uniqID) async {
     //var endpointUrl ="http://adiyogitechnosoft.com/attendance_dev/api/leave/NODS5X5N5V2H2Z";
-    var endpointUrl = All_API().baseurl + All_API().api_leave_spinner +
-        "NODS5X5N5V2H2Z";
-    print("NotificationUrl--> " + endpointUrl);
+    var endpointUrl = All_API().baseurl + All_API().api_leave_spinner + uniqID  ;
+    print("ExpensesUrl--> " + endpointUrl);
     var response = await http.get(endpointUrl, headers: {
       All_API().key: All_API().keyvalue,
     });
@@ -430,17 +423,17 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
   _giveData(TextEditingController textEditingController) {
     msg=_textEditingController.text;
   }
-  void _showToast(BuildContext context,String msg) {
-    final scaffold = Scaffold.of(context);
-    scaffold.showSnackBar(
-      SnackBar(
-        backgroundColor: Colors.green,
-        content: Text("Have a nice Day"),
-        behavior:SnackBarBehavior.floating ,
-        action: SnackBarAction(
-            label: msg!=null?msg:"",
-            textColor: Colors.white, onPressed: scaffold.hideCurrentSnackBar),
-      ),
-    );
-  }
+  // void _showToast(BuildContext context,String msg) {
+  //   final scaffold = Scaffold.of(context);
+  //   scaffold.showSnackBar(
+  //     SnackBar(
+  //       backgroundColor: Colors.green,
+  //       content: Text("Have a nice Day"),
+  //       behavior:SnackBarBehavior.floating ,
+  //       action: SnackBarAction(
+  //           label: msg!=null?msg:"",
+  //           textColor: Colors.white, onPressed: scaffold.hideCurrentSnackBar),
+  //     ),
+  //   );
+  // }
 }

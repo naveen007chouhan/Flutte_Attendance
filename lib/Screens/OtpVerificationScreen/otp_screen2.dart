@@ -15,10 +15,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class OTPScreen extends StatefulWidget {
   final String opt;
   final String phone;
-  final String fcmID;
 
 
-  OTPScreen({this.opt,this.phone,this.fcmID});
+
+  OTPScreen({this.opt,this.phone,});
 
   /*Future<MainProfileModel> loadUserData()async{
     String url = 'http://adiyogitechnosoft.com/attendance_dev/api2/employee/verify_otp';
@@ -42,10 +42,23 @@ class OTPScreen extends StatefulWidget {
 }
 
 class _OTPScreenState extends State<OTPScreen> {
+  String fcmID;
 
+  getData()async {
+    SharedPreferences sharedPreferences= await SharedPreferences.getInstance();
+    setState(() {
+      fcmID = sharedPreferences.getString("fcmID");
+    });
+  }
 
   List<MainProfileModel> list;
   FocusNode focusNode = new FocusNode();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getData();
+  }
   @override
   Widget build(BuildContext context) {
     print("OTP PAGE : "+widget.opt);
@@ -129,7 +142,7 @@ class _OTPScreenState extends State<OTPScreen> {
                                   //onpressed gets called when the button is tapped.
                                   if(CheckOTP!=null && CheckOTP==widget.opt){
                                     print("CheckOTP-->"+CheckOTP);
-                                    otpCheck(widget.opt,widget.phone,widget.fcmID,context);
+                                    otpCheck(widget.opt,widget.phone,fcmID,context);
 
                                   }else{
                                     FocusScope.of(context).requestFocus(focusNode);
@@ -161,7 +174,7 @@ class _OTPScreenState extends State<OTPScreen> {
   Future<MainProfileModel> otpCheck(String opt1, String phone1,String fcmid,BuildContext buildContext) async {
     String url = All_API().baseurl +All_API().api_otp_verify;
 
-    String body = jsonEncode({"phone": phone1,"otp":opt1 ,"fcm_id":"NODN2D0I7W4V8I2K" });
+    String body = jsonEncode({"phone": phone1,"otp":opt1 ,"fcm_id":fcmID });
     print("phone_body--> " + body);
 
     Map<String, String> headers = {

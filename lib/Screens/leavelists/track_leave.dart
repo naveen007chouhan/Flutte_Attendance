@@ -73,13 +73,13 @@ class MyHomePageState extends State<MyTrackLeave> {
               style: TextStyle(color: Colors.orange),
             ),
           ),
-          leading: new IconButton(
+          /*leading: new IconButton(
             icon: new Icon(
               Icons.arrow_back_ios,
               color: Colors.orange,
             ),
             onPressed: () => Navigator.of(context).pop(),
-          ),
+          ),*/
         ),
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -111,7 +111,6 @@ class MyHomePageState extends State<MyTrackLeave> {
                                   horizontal: 10.0, vertical: 6.0),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.blue[1000],
                                   borderRadius:
                                   BorderRadius.all(Radius.circular(10.0),
                                     // topRight: Radius.circular(10.0),
@@ -133,11 +132,12 @@ class MyHomePageState extends State<MyTrackLeave> {
                                     child: Image.asset("assets/rejected_ap.png",height: 60,width: 50,fit: BoxFit.contain,),
                                   ),
                                   title: Padding(
-                                    padding: const EdgeInsets.all(4.0),
+                                    padding: const EdgeInsets.all(2.0),
                                     child: Text(
-                                      notificationlist.name,
+                                      notificationlist.name.toUpperCase(),
                                       style: TextStyle(
-                                          color: Colors.amber,
+                                        fontSize: 15,
+                                          color: Colors.orange,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ),
@@ -149,7 +149,7 @@ class MyHomePageState extends State<MyTrackLeave> {
                                         TextSpan(
                                           style: TextStyle(
                                               fontSize: 17,
-                                              color: Colors.amber),
+                                              color: Colors.black54),
                                           children: [
                                             TextSpan(
                                               text: '$dateFrom',
@@ -157,7 +157,7 @@ class MyHomePageState extends State<MyTrackLeave> {
                                             WidgetSpan(
                                               child: Icon(
                                                   Icons.arrow_right_sharp,
-                                                  color: Colors.white),
+                                                  color: Colors.black54),
                                             ),
                                             TextSpan(
                                               text: '$dateTo',
@@ -178,7 +178,6 @@ class MyHomePageState extends State<MyTrackLeave> {
                                   horizontal: 10.0, vertical: 6.0),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.blue[1000],
                                   borderRadius:
                                   BorderRadius.all(Radius.circular(10.0),
                                     // topRight: Radius.circular(10.0),
@@ -200,11 +199,12 @@ class MyHomePageState extends State<MyTrackLeave> {
                                     child: Image.asset("assets/pending_ap.png",height: 60,width: 50,fit: BoxFit.contain,),
                                   ),
                                   title: Padding(
-                                    padding: const EdgeInsets.all(4.0),
+                                    padding: const EdgeInsets.all(2.0),
                                     child: Text(
-                                      notificationlist.name,
+                                      notificationlist.name.toUpperCase(),
                                       style: TextStyle(
-                                          color: Colors.amber,
+                                        fontSize: 15,
+                                          color: Colors.orange,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ),
@@ -216,7 +216,7 @@ class MyHomePageState extends State<MyTrackLeave> {
                                         TextSpan(
                                           style: TextStyle(
                                               fontSize: 17,
-                                              color: Colors.amber),
+                                              color: Colors.black54),
                                           children: [
                                             TextSpan(
                                               text: '$dateFrom',
@@ -224,7 +224,7 @@ class MyHomePageState extends State<MyTrackLeave> {
                                             WidgetSpan(
                                               child: Icon(
                                                   Icons.arrow_right_sharp,
-                                                  color: Colors.white),
+                                                  color: Colors.black54),
                                             ),
                                             TextSpan(
                                               text: '$dateTo',
@@ -245,7 +245,7 @@ class MyHomePageState extends State<MyTrackLeave> {
                                   horizontal: 10.0, vertical: 6.0),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.blue[1000],
+                                  color: Colors.white54,
                                   borderRadius:
                                   BorderRadius.all(Radius.circular(10.0),
                                     // topRight: Radius.circular(10.0),
@@ -267,11 +267,12 @@ class MyHomePageState extends State<MyTrackLeave> {
                                     child: Image.asset("assets/approved_ap.png",height: 60,width: 50,fit: BoxFit.contain,),
                                   ),
                                   title: Padding(
-                                    padding: const EdgeInsets.all(4.0),
+                                    padding: const EdgeInsets.all(2.0),
                                     child: Text(
-                                      notificationlist.name,
+                                      notificationlist.name.toUpperCase(),
                                       style: TextStyle(
-                                          color: Colors.amber,
+                                          fontSize:15,
+                                          color: Colors.orange,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ),
@@ -283,7 +284,7 @@ class MyHomePageState extends State<MyTrackLeave> {
                                         TextSpan(
                                           style: TextStyle(
                                               fontSize: 17,
-                                              color: Colors.amber),
+                                              color: Colors.black54),
                                           children: [
                                             TextSpan(
                                               text: '$dateFrom',
@@ -291,7 +292,7 @@ class MyHomePageState extends State<MyTrackLeave> {
                                             WidgetSpan(
                                               child: Icon(
                                                   Icons.arrow_right_sharp,
-                                                  color: Colors.white),
+                                                  color: Colors.black54),
                                             ),
                                             TextSpan(
                                               text: '$dateTo',

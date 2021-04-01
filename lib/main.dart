@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),*/
+      theme: ThemeData(fontFamily: 'Raleway'),
       home: MyHomePage(),
     );
   }
