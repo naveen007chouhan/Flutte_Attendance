@@ -106,12 +106,12 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     // TODO: implement initState
+    super.initState();
     getPermission();
     _getAddressFromLatLng();
     _getCurrentLocation();
     getCurrentDate();
     getMessage();
-    super.initState();
   }
 
   getCurrentDate()async{

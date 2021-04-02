@@ -38,22 +38,37 @@ class newsDetailState extends State<NeswDetail> {
           ),
           Expanded(
               flex: 4,
-              child: SingleChildScrollView(
+              child: ListView(
+                padding: const EdgeInsets.all(8),
+                shrinkWrap: true,
                 scrollDirection: Axis.vertical,
-                physics: AlwaysScrollableScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Text(widget.title,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25),),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(widget.description,style: TextStyle(fontSize: 15),),
-                      ),
-                      Text(widget.author,textAlign: TextAlign.end,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
-                    ],
-                  ),
-                ),
+                children: [
+                  Column(
+                      children: [
+                        Text(widget.title,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25),),
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Text(widget.description,style: TextStyle(fontSize: 15),),
+                        ),
+                        Padding(padding: EdgeInsets.all(6.0),
+                          child:Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                widget.author,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15),
+                                maxLines: 2,
+                              ),
+                            ],
+                          ),),
+                        //Text(widget.author,textAlign: TextAlign.end,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+                      ],
+                    ),
+
+                ],
+
               )
           )
         ],

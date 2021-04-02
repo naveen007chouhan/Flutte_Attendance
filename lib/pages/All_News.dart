@@ -8,35 +8,32 @@ import 'package:http/http.dart' as http;
 
 import 'NewsDetail.dart';
 
-
-
-class All_News extends StatefulWidget{
+class All_News extends StatefulWidget {
   @override
   newsFeedsState createState() => newsFeedsState();
 }
 
 class newsFeedsState extends State<All_News> {
-  Future<Newsmodel>newsdetail() async {
+  Future<Newsmodel> newsdetail() async {
     var endpointUrl = All_API().baseurl + All_API().api_news;
-    Map<String, String>  queryParameter={
-      'status':'1',
+    Map<String, String> queryParameter = {
+      'status': '1',
     };
     String queryString = Uri(queryParameters: queryParameter).query;
     var requestUrl = endpointUrl + '?' + queryString;
     print(requestUrl);
     try {
-      var response = await http.get(requestUrl,headers: {
+      var response = await http.get(requestUrl, headers: {
         All_API().key: All_API().keyvalue,
       });
-      print("News : "+response.body);
-      if(response.statusCode==200){
+      print("News : " + response.body);
+      if (response.statusCode == 200) {
         var jsonString = response.body;
-        print("News : "+jsonString);
+        print("News : " + jsonString);
         var jsonMap = json.decode(jsonString);
         return Newsmodel.fromJson(jsonMap);
       }
-    }
-    catch(Exception){
+    } catch (Exception) {
       return Exception;
     }
   }
@@ -48,29 +45,30 @@ class newsFeedsState extends State<All_News> {
       appBar: AppBar(
         title: Container(
           child: Text(
-            'All News', style: TextStyle(color: Colors.orange),),
+            'All News',
+            style: TextStyle(color: Colors.orange),
+          ),
         ),
         automaticallyImplyLeading: false,
         backgroundColor: Colors.blue[1000],
       ),
-      body:FutureBuilder<Newsmodel>(
+      body: FutureBuilder<Newsmodel>(
         future: newsdetail(),
-        builder: (context,snapshot){
-          if(snapshot.hasData){
-            var path=All_API().baseurl_img+snapshot.data.path;
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var path = All_API().baseurl_img + snapshot.data.path;
             return ListView.builder(
                 shrinkWrap: true,
                 itemCount: snapshot.data.data.length,
                 scrollDirection: Axis.vertical,
-                itemBuilder: (context, index){
+                itemBuilder: (context, index) {
                   var article = snapshot.data.data[index];
                   return Card(
                     elevation: 10,
                     child: GestureDetector(
-                      onTap: (){
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context)=>
-                                NeswDetail(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => NeswDetail(
                                   image: article.image,
                                   path: path,
                                   title: article.title,
@@ -78,62 +76,98 @@ class newsFeedsState extends State<All_News> {
                                   author: article.author,
                                 )));
                       },
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: Image.network(path+article.image,fit:BoxFit.fitHeight,height: 200,width: 100,),
-                          ),
-                          Expanded(
-                              flex: 4,
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(article.title,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
+                      child: Container(
+                        height: 195,
+                        child: Card(
+                          elevation: 10,
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                child: GestureDetector(
+                                  onTap: () {},
+                                  child: Container(
+                                    width: 100.0,
+                                    height: 100.0,
+                                    decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        image: DecorationImage(
+                                            image: NetworkImage(
+                                              path + article.image,
+                                            ),
+                                            fit: BoxFit.cover),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(75.0)),
+                                        boxShadow: [
+                                          BoxShadow(
+                                              blurRadius: 7.0,
+                                              color: Colors.black)
+                                        ]),
                                   ),
-                                  Text(article.description,),
-                                  Text(article.author,textAlign: TextAlign.end,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
-                                ],
-                              )
-                          )
-                        ],
+                                ),
+                              ),
+                              Expanded(
+                                  flex: 4,
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Text(
+                                          article.title,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                          ),
+                                          maxLines: 3,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(6.0),
+                                        child: Text(
+                                          article.description,
+                                          maxLines: 4,
+                                        ),
+                                      ),
+                                      Padding(padding: EdgeInsets.all(6.0),
+                                        child:Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            article.author,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15),
+                                            maxLines: 1,
+                                          ),
+                                        ],
+                                      ),),
+
+
+                                    ],
+                                  ))
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   );
-                }
+                });
+          }else {
+            return Center(
+
+              child: snapshot.hasData == false
+                  ? CircularProgressIndicator()
+                  : TextShowing(),
             );
           }
-          else
-            //return Center(child: CircularProgressIndicator());
-            return ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index){
-                  return Card(
-                    elevation: 10,
-                    child: Row(
-                      children: [
-                        Container(
-                          margin:const EdgeInsets.only(top: 5,left: 20,bottom: 5,right: 0),
-                          child:Image.asset("assets/ayt.png",height: 100,width: 50,),
-                        ),
-                        Container(
-                          width: 200,
-                          alignment: Alignment.topCenter,
-                          margin: const EdgeInsets.only(top: 5,left: 20,bottom: 10,right: 0),
-                          child:Column(
-                              children: [
-                                Text("Tital",style: TextStyle(fontSize: 15,color: Colors.black,),),
-                                Text("Description",style: TextStyle(fontSize: 10,color: Colors.black),),
-                              ]),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-            );
+          // return Center(child:CircularProgressIndicator() ,);
+
         },
       ),
     );
   }
+}
+
+TextShowing<Widget>() {
+  Text("No Data");
 }

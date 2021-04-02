@@ -27,6 +27,7 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
     // TODO: implement initState
     super.initState();
     getData();
+    trackdashStudent();
   }
 
   getData() async {
@@ -64,8 +65,18 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
     var response = await http.get(requestUrl, headers: headers);
 
     Map jasonData = jsonDecode(response.body);
-    print('EarlyCheckInOut : ' + jasonData.toString());
-    return TrackDashboardModel.fromJson(jasonData);
+    if(response.statusCode==200){
+      //latecheckIN = jasonData['data'][0]['counterRecord'][0]['early_checkout'];
+        //earlycheckOUT = jasonData['data'][0]['counterRecord'][0]['total_early_checkout'];
+       //var latecheckin = jasonData['data'][0]['counterRecord'][2]['late_checkin'];
+       //var earlycheckout = jasonData['data'][0]['counterRecord'][3]['early_checkout'];
+      // var uniqId = jasonData['data'][0]['unique_id'];
+      // var useruniqId = jasonData['data'][0]['user_unique_id'];
+      print('EarlyCheckInOut : ' + jasonData.toString());
+      //print(latecheckIN.toString()+' latecheckIN : ' + earlycheckOUT.toString());//+" "+earlycheckOUT);//+" "+latecheckin+" "+earlycheckout);
+      return TrackDashboardModel.fromJson(jasonData);
+    }
+
   }
 
   @override
@@ -82,10 +93,11 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
               itemBuilder: (context, index) {
                 var article = snapshot.data.data[index];
                 return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     // Expanded(flex:2,child: ),
-                    // Expanded(flex:2,child: )
+                    // Expanded(flex:2,child: ),
 
                     Container(
                       margin: new EdgeInsets.symmetric(horizontal: 5.0),
@@ -166,9 +178,9 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
                                           Text(
                                             "Late CheckIn",
                                             style: TextStyle(
-                                                fontSize: 13,
+                                                fontSize: 12,
                                                 color: Colors.black,
-                                                fontWeight: FontWeight.bold),
+                                                fontWeight: FontWeight.w400),
                                           ),
                                         ],
                                       ),
@@ -183,7 +195,7 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
                                             children: [
                                               Padding(
                                                 padding:
-                                                const EdgeInsets.all(8.0),
+                                                const EdgeInsets.all(5.0),
                                                 child: Center(
                                                     child: Text(
                                                       article.counterRecord[index]
@@ -193,7 +205,7 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
                                                           fontSize: 25,
                                                           color: Colors.black,
                                                           fontWeight:
-                                                          FontWeight.bold),
+                                                          FontWeight.w600),
                                                     )),
                                               ),
                                               Center(
@@ -253,9 +265,7 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
                                       child: Container(
                                         alignment: Alignment.center,
                                         child: Text(
-                                          article.counterRecord[index]
-                                              .earlyCheckout
-                                              .toString(),
+                                          article.counterRecord[0].earlyCheckout.toString(),
                                           style: TextStyle(
                                               fontSize: 30,
                                               color: Colors.red,
@@ -297,9 +307,9 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
                                           Text(
                                             "Early CheckOut",
                                             style: TextStyle(
-                                                fontSize: 13,
+                                                fontSize: 12,
                                                 color: Colors.black,
-                                                fontWeight: FontWeight.bold),
+                                                fontWeight: FontWeight.w400),
                                           ),
                                         ],
                                       ),
@@ -314,17 +324,15 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
                                             children: [
                                               Padding(
                                                 padding:
-                                                const EdgeInsets.all(8.0),
+                                                const EdgeInsets.all(5.0),
                                                 child: Center(
                                                     child: Text(
-                                                      article.counterRecord[index]
-                                                          .totalEarlyCheckout
-                                                          .toString(),
+                                                      article.counterRecord[0].totalEarlyCheckout,
                                                       style: TextStyle(
                                                           fontSize: 25,
                                                           color: Colors.black,
                                                           fontWeight:
-                                                          FontWeight.bold),
+                                                          FontWeight.w600),
                                                     )),
                                               ),
                                               Center(

@@ -190,7 +190,6 @@ class NotificationScreenState extends State<NotificationScreen> {
                     });
               }
               else if(snapshot.hasData == false){
-
                 return Center(
                   child: Card(
                     color: Colors.blue[1000],

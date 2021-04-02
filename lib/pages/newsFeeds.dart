@@ -16,6 +16,7 @@ class newsFeeds extends StatefulWidget{
 
 class newsFeedsState extends State<newsFeeds> {
   String statuscode;
+  String statusno="200";
   Future<Newsmodel>newsdetail() async {
     var endpointUrl = All_API().baseurl + All_API().api_news;
     Map<String, String>  queryParameter={
@@ -81,7 +82,7 @@ class newsFeedsState extends State<newsFeeds> {
                           //onpressed gets called when the button is tapped.
                           print("StatusCODE_onCheck : "+statuscode);
                           // ignore: unrelated_type_equality_checks
-                          if(statuscode == 200){
+                          if(statuscode == statusno){
                             Navigator.of(context).push(MaterialPageRoute(builder: (context)=>All_News()));
                           }else{
                             final snackBar = SnackBar(content: Text('No Data Found',style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.red,);
