@@ -32,7 +32,7 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
   String address;
   String device;
   String action_check;
-
+  FocusNode focusNode = new FocusNode();
   @override
   void initState() {
     // TODO: implement initState
@@ -95,6 +95,7 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
     };
     //String imageMulti=image.path.split('/image_picker').last;
     //String path=All_API().baseurl_img+'/uploads/employee/';
+    print("Path Image -------> "+uniqID+" "+leaveID+" "+ExpensesType+" "+kmvalue+" "+msg+" "+dateFrom);
     var request = http.MultipartRequest('POST', Uri.parse(url));
     request.fields['employee_id'] = uniqID;
     request.fields['expense_id'] = leaveID;
@@ -123,23 +124,44 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
     request.headers.addAll(headers);
 
     http.StreamedResponse response = await request.send();
-    final snackBar = SnackBar(
-      content: Text(
-        'Your Expenses Uploaded',
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
-      backgroundColor: Colors.green,
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    var resopnss= await http.Response.fromStream(response);
+    var jsonData = jsonDecode(resopnss.body);
+    print("Expenses---> : "+resopnss.body);
+    String mssg=jsonData['msg'];
     if (response.statusCode == 200) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MyTrackExpenses(),
-        ),
-      );
+      print("if Expenses---> : Your Expenses Uploaded "+ mssg );
+      setState(() {
+        FocusScope.of(context).requestFocus(focusNode);
+        final snackBar = SnackBar(content: Text(mssg,style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.red,);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MyTrackExpenses(),
+          ),
+        );
+      });
+
       print(await response.stream.bytesToString());
     } else {
+      print("else Expenses---> : Your Expenses Not Uploaded");
+      setState(() {
+        final snackBar = SnackBar(
+          content: Text(
+            'Your Expenses Not Uploaded',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Colors.red,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MyTrackExpenses(),
+          ),
+        );
+
+      });
       print(response.reasonPhrase);
     }
   }

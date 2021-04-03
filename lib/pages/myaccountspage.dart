@@ -269,7 +269,7 @@ class _ProfileThreePageState extends State<ProfileScreen> {
 
   void profileUpload(File uploadimage) async {
     //String uni_id="NODS5X5N5V2H2Z";
-    loadingdialog();
+
     String url = All_API().baseurl +All_API().api_profile+uniqId;
     print("profile image URL--->"+url);
     String filename = uploadimage.path.split("/image_picker").last;
@@ -281,7 +281,7 @@ class _ProfileThreePageState extends State<ProfileScreen> {
     request.headers.addAll(headers);
     final response = await request.send();
     final respStr = await response.stream.bytesToString();
-
+    loadingdialog();
     if (response.statusCode == 200) {
       setState(() {
         _load=false;
@@ -298,9 +298,12 @@ class _ProfileThreePageState extends State<ProfileScreen> {
 
     }
     else {
-      final snackBar = SnackBar(content: Text('Your Profile Image Not Successfully Updated',style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.red,);
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      print("profileUpload_reasonPhrase--> "+response.reasonPhrase);
+      setState(() {
+        final snackBar = SnackBar(content: Text('Your Profile Image Not Successfully Updated',style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.red,);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        print("profileUpload_reasonPhrase--> "+response.reasonPhrase);
+      });
+
     }
   }
 

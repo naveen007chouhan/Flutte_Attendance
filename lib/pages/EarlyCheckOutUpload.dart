@@ -15,6 +15,7 @@ class EarlyCheckOutUploadState extends State<EarlyCheckOutUpload> {
   TextEditingController _textEditingController = TextEditingController();
   String unique_id2;
   String reason;
+  FocusNode focusNode = new FocusNode();
 
   @override
   void initState(){
@@ -110,11 +111,21 @@ class EarlyCheckOutUploadState extends State<EarlyCheckOutUpload> {
     var jsonData = jsonDecode(response.body);
     String msg=jsonData['msg'];
     if (response.statusCode == 200) {
-      print("Mark Early Response--> " + jsonData);
-      _showToast(context, msg);
+      print("Mark if Response--> " + jsonData);
+      setState(() {
+        FocusScope.of(context).requestFocus(focusNode);
+        final snackBar = SnackBar(content: Text(msg,style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.red,);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      });
+
     }
     else{
-      _showToast(context, msg);
+      print("Mark else Response--> " + msg);
+      setState(() {
+        FocusScope.of(context).requestFocus(focusNode);
+        final snackBar = SnackBar(content: Text(msg,style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.red,);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      });
     }
   }
   void _showToast(BuildContext context,String msg) {

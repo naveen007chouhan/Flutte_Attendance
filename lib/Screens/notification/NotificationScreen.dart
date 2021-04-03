@@ -49,27 +49,27 @@ class NotificationScreenState extends State<NotificationScreen> {
       StatusCode=response.statusCode;
       print("Notificationresponse--> " + response.body);
       if (response.statusCode == 200) {
-        Fluttertoast.showToast(
-            msg: msg,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 16.0
-        );
-        return NotificationModel.fromJson(jasonDataNotification);
+        // Fluttertoast.showToast(
+        //     msg: msg,
+        //     toastLength: Toast.LENGTH_SHORT,
+        //     gravity: ToastGravity.CENTER,
+        //     timeInSecForIosWeb: 1,
+        //     backgroundColor: Colors.green,
+        //     textColor: Colors.white,
+        //     fontSize: 16.0
+        // );
+        //return NotificationModel.fromJson(jasonDataNotification);
 
       }else{
-        Fluttertoast.showToast(
-            msg: msg,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0
-        );
+        // Fluttertoast.showToast(
+        //     msg: msg,
+        //     toastLength: Toast.LENGTH_SHORT,
+        //     gravity: ToastGravity.CENTER,
+        //     timeInSecForIosWeb: 1,
+        //     backgroundColor: Colors.red,
+        //     textColor: Colors.white,
+        //     fontSize: 16.0
+        // );
 
       }
     } catch (Exception) {
@@ -111,108 +111,107 @@ class NotificationScreenState extends State<NotificationScreen> {
           ),),
         body: FutureBuilder<NotificationModel>(
             future: notification(),
+            // ignore: missing_return
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return ListView.builder(
-                    itemCount: snapshot.data.data.length,
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      var notificationlist = snapshot.data.data[index];
-                      var str=notificationlist.date.toString();
-                      var Strdate=str.split(" ");
-                      var date = Strdate[0].trim();
-                      var time = Strdate[1].trim();
-                      print("notificationlist-->"+notificationlist.title);
-                      return Card(
-                        elevation: 8.0,
-                        margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-                        child: Container(
-                          decoration: BoxDecoration(color: Colors.blue[1000],
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)
-                              // topRight: Radius.circular(10.0),
-                              // bottomRight: Radius.circular(10.0),
-                              // topLeft: Radius.circular(10.0),
-                              // bottomLeft: Radius.circular(10.0),
-                            ),
-                          ),
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                  return Text('none');
+                case ConnectionState.waiting:
+                  return Center(child: CircularProgressIndicator());
+                case ConnectionState.active:
+                  return Text('');
+                case ConnectionState.done:
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                        itemCount: snapshot.data.data.length,
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          var notificationlist = snapshot.data.data[index];
+                          var str=notificationlist.date.toString();
+                          var Strdate=str.split(" ");
+                          var date = Strdate[0].trim();
+                          var time = Strdate[1].trim();
+                          print("notificationlist-->"+notificationlist.title);
+                          return Card(
+                            elevation: 8.0,
+                            margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                            child: Container(
+                              decoration: BoxDecoration(color: Colors.white54,
+                                border: Border.all(
+                                  color: Colors.orange,  // red as border color
+                                ),
+                                borderRadius: BorderRadius.all(Radius.circular(5.0)
+                                  // topRight: Radius.circular(10.0),
+                                  // bottomRight: Radius.circular(10.0),
+                                  // topLeft: Radius.circular(10.0),
+                                  // bottomLeft: Radius.circular(10.0),
+                                ),
+                              ),
 
-                          margin:const EdgeInsets.only(top: 5,left: 5,bottom: 5,right: 5),
-                          child: ListTile(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                              // margin:const EdgeInsets.only(top: 5,left: 5,bottom: 5,right: 5),
+                              child: ListTile(
+                                contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
 
-                            title: Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Text(
-                                notificationlist.title,
-                                style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+                                title: Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: Text(
+                                    notificationlist.title,
+                                    style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
+
+                                subtitle: Column(
+                                  children: <Widget>[
+                                    Text(notificationlist.message,textDirection: TextDirection.ltr,
+                                      style: TextStyle(color:Colors.black45),softWrap: true,),
+                                    SizedBox(
+                                      height: 20,
+                                      width: 10,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("Date : "+'$date',textDirection: TextDirection.ltr,
+                                          style: TextStyle(fontSize:12,color:Colors.black54),softWrap: true,),
+                                        Text("Time : "+'$time',textDirection: TextDirection.ltr,
+                                          style: TextStyle(fontSize:12,color:Colors.black54),softWrap: true,),
+                                      ],
+                                    ),
+
+
+                                  ],
+                                ),
+                                // trailing:
+                                //  Icon(Icons.keyboard_arrow_right_rounded, color: Colors.white, size: 30.0)),
+
                               ),
                             ),
-                            // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
+                          );
 
-                            subtitle: Column(
-                              children: <Widget>[
-                                Text(notificationlist.message,textDirection: TextDirection.ltr,
-                                  style: TextStyle(color:Colors.white),softWrap: true,),
-                                SizedBox(
-                                  height: 20,
-                                  width: 10,
-                                ),
-                                Text.rich(
-
-                                  TextSpan(
-                                    style: TextStyle(
-                                        fontSize: 17, color:Colors.amber
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                        text: '$date',
-                                      ),
-                                      WidgetSpan(
-                                        child: Icon(Icons.arrow_right_sharp,color: Colors.white),
-                                      ),
-                                      TextSpan(
-                                        text: '$time',
-                                      )
-                                    ],
-                                  ),
-                                )
-
-                              ],
+                        });
+                  }
+                  else
+                    return Center(
+                      child: Card(
+                        color: Colors.blue[1000],
+                        elevation: 10,
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Text(
+                            All_API().two_error_occurred,
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.orange,
                             ),
-                            // trailing:
-                            //  Icon(Icons.keyboard_arrow_right_rounded, color: Colors.white, size: 30.0)),
-
+                            textAlign: TextAlign.center,
                           ),
                         ),
-                      );
-
-                    });
+                      ),
+                    );
               }
-              else if(snapshot.hasData == false){
-                return Center(
-                  child: Card(
-                    color: Colors.blue[1000],
-                    elevation: 10,
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Text(All_API().two_error_occurred,style: TextStyle(fontSize: 15,color: Colors.orange,),textAlign: TextAlign.center,),
-                    ),
-                  ),
-                );
 
-              }else
-                return StatusCode==400?Center(
-                  child: Card(
-                    color: Colors.blue[1000],
-                    elevation: 10,
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Text(All_API().four_error_occurred,style: TextStyle(fontSize: 15,color: Colors.orange,),textAlign: TextAlign.center,),
-                    ),
-                  ),
-                ):
-                CircularProgressIndicator();
             }),
       ),
     );

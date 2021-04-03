@@ -67,9 +67,9 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
     Map jasonData = jsonDecode(response.body);
     if(response.statusCode==200){
       //latecheckIN = jasonData['data'][0]['counterRecord'][0]['early_checkout'];
-        //earlycheckOUT = jasonData['data'][0]['counterRecord'][0]['total_early_checkout'];
-       //var latecheckin = jasonData['data'][0]['counterRecord'][2]['late_checkin'];
-       //var earlycheckout = jasonData['data'][0]['counterRecord'][3]['early_checkout'];
+      //earlycheckOUT = jasonData['data'][0]['counterRecord'][0]['total_early_checkout'];
+      //var latecheckin = jasonData['data'][0]['counterRecord'][2]['late_checkin'];
+      //var earlycheckout = jasonData['data'][0]['counterRecord'][3]['early_checkout'];
       // var uniqId = jasonData['data'][0]['unique_id'];
       // var useruniqId = jasonData['data'][0]['user_unique_id'];
       print('EarlyCheckInOut : ' + jasonData.toString());

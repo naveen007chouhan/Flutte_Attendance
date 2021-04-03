@@ -101,11 +101,11 @@ class MyHomePageState extends State<MyTrackLeave> {
                               shrinkWrap: true,
                               itemBuilder: (context, index) {
                                 int status =
-                                    int.parse(snapshot.data.data[index].status);
+                                int.parse(snapshot.data.data[index].status);
                                 var notificationlist =
-                                    snapshot.data.data[index];
+                                snapshot.data.data[index];
                                 var strFrom =
-                                    notificationlist.fromDate.toString();
+                                notificationlist.fromDate.toString();
                                 var StrdateFrom = strFrom.split(" ");
                                 var dateFrom = StrdateFrom[0].trim();
                                 /////
@@ -114,268 +114,268 @@ class MyHomePageState extends State<MyTrackLeave> {
                                 var dateTo = StrdateTo[0].trim();
                                 return status == 0
                                     ? Card(
-                                        elevation: 8.0,
-                                        margin: new EdgeInsets.symmetric(
-                                            horizontal: 10.0, vertical: 6.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.all(
-                                              Radius.circular(10.0),
-                                              // topRight: Radius.circular(10.0),
-                                              // bottomRight: Radius.circular(10.0),
-                                              // topLeft: Radius.circular(10.0),
-                                              // bottomLeft: Radius.circular(10.0),
-                                            ),
-                                          ),
-                                          margin: const EdgeInsets.only(
-                                              top: 5,
-                                              left: 5,
-                                              bottom: 5,
-                                              right: 5),
-                                          child: ListTile(
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    horizontal: 10.0,
-                                                    vertical: 10.0),
-                                            leading: Container(
-                                              padding:
-                                                  EdgeInsets.only(right: 12.0),
-                                              decoration: new BoxDecoration(
-                                                  border: new Border(
-                                                      right: new BorderSide(
-                                                          width: 5.0,
-                                                          color: Colors.red))),
-                                              child: Image.asset(
-                                                "assets/rejected_ap.png",
-                                                height: 70,
-                                                width: 60,
-                                                fit: BoxFit.contain,
-                                              ),
-                                            ),
-                                            title: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(2.0),
-                                              child: Text(
-                                                notificationlist.name
-                                                    .toUpperCase(),
-                                                style: TextStyle(
-                                                    fontSize: 15,
-                                                    color: Colors.orange,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ),
-                                            // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
+                                  elevation: 8.0,
+                                  margin: new EdgeInsets.symmetric(
+                                      horizontal: 10.0, vertical: 6.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0),
+                                        // topRight: Radius.circular(10.0),
+                                        // bottomRight: Radius.circular(10.0),
+                                        // topLeft: Radius.circular(10.0),
+                                        // bottomLeft: Radius.circular(10.0),
+                                      ),
+                                    ),
+                                    margin: const EdgeInsets.only(
+                                        top: 5,
+                                        left: 5,
+                                        bottom: 5,
+                                        right: 5),
+                                    child: ListTile(
+                                      contentPadding:
+                                      EdgeInsets.symmetric(
+                                          horizontal: 10.0,
+                                          vertical: 10.0),
+                                      leading: Container(
+                                        padding:
+                                        EdgeInsets.only(right: 12.0),
+                                        decoration: new BoxDecoration(
+                                            border: new Border(
+                                                right: new BorderSide(
+                                                    width: 5.0,
+                                                    color: Colors.red))),
+                                        child: Image.asset(
+                                          "assets/rejected_ap.png",
+                                          height: 70,
+                                          width: 60,
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                      title: Padding(
+                                        padding:
+                                        const EdgeInsets.all(2.0),
+                                        child: Text(
+                                          notificationlist.name
+                                              .toUpperCase(),
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              color: Colors.orange,
+                                              fontWeight:
+                                              FontWeight.bold),
+                                        ),
+                                      ),
+                                      // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
 
-                                            subtitle: Column(
-                                              children: <Widget>[
-                                                Text.rich(
-                                                  TextSpan(
-                                                    style: TextStyle(
-                                                        fontSize: 17,
-                                                        color: Colors.black54),
-                                                    children: [
-                                                      TextSpan(
-                                                        text: '$dateFrom',
-                                                      ),
-                                                      WidgetSpan(
-                                                        child: Icon(
-                                                            Icons
-                                                                .arrow_right_sharp,
-                                                            color:
-                                                                Colors.black54),
-                                                      ),
-                                                      TextSpan(
-                                                        text: '$dateTo',
-                                                      )
-                                                    ],
-                                                  ),
+                                      subtitle: Column(
+                                        children: <Widget>[
+                                          Text.rich(
+                                            TextSpan(
+                                              style: TextStyle(
+                                                  fontSize: 17,
+                                                  color: Colors.black54),
+                                              children: [
+                                                TextSpan(
+                                                  text: '$dateFrom',
+                                                ),
+                                                WidgetSpan(
+                                                  child: Icon(
+                                                      Icons
+                                                          .arrow_right_sharp,
+                                                      color:
+                                                      Colors.black54),
+                                                ),
+                                                TextSpan(
+                                                  text: '$dateTo',
                                                 )
                                               ],
                                             ),
-                                            // trailing:
-                                            //  Icon(Icons.keyboard_arrow_right_rounded, color: Colors.white, size: 30.0)),
-                                          ),
-                                        ),
-                                      )
+                                          )
+                                        ],
+                                      ),
+                                      // trailing:
+                                      //  Icon(Icons.keyboard_arrow_right_rounded, color: Colors.white, size: 30.0)),
+                                    ),
+                                  ),
+                                )
                                     : status == 1
-                                        ? Card(
-                                            elevation: 8.0,
-                                            margin: new EdgeInsets.symmetric(
-                                                horizontal: 10.0,
-                                                vertical: 6.0),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.all(
-                                                  Radius.circular(10.0),
-                                                  // topRight: Radius.circular(10.0),
-                                                  // bottomRight: Radius.circular(10.0),
-                                                  // topLeft: Radius.circular(10.0),
-                                                  // bottomLeft: Radius.circular(10.0),
-                                                ),
-                                              ),
-                                              margin: const EdgeInsets.only(
-                                                  top: 5,
-                                                  left: 5,
-                                                  bottom: 5,
-                                                  right: 5),
-                                              child: ListTile(
-                                                contentPadding:
-                                                    EdgeInsets.symmetric(
-                                                        horizontal: 10.0,
-                                                        vertical: 10.0),
-                                                leading: Container(
-                                                  padding: EdgeInsets.only(
-                                                      right: 12.0),
-                                                  decoration: new BoxDecoration(
-                                                      border: new Border(
-                                                          right: new BorderSide(
-                                                              width: 5.0,
-                                                              color: Colors
-                                                                  .blue))),
-                                                  child: Image.asset(
-                                                    "assets/pending_ap.png",
-                                                    height: 70,
-                                                    width: 60,
-                                                    fit: BoxFit.contain,
-                                                  ),
-                                                ),
-                                                title: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(2.0),
-                                                  child: Text(
-                                                    notificationlist.name
-                                                        .toUpperCase(),
-                                                    style: TextStyle(
-                                                        fontSize: 15,
-                                                        color: Colors.orange,
-                                                        fontWeight:
-                                                            FontWeight.w200),
-                                                  ),
-                                                ),
-                                                // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
+                                    ? Card(
+                                  elevation: 8.0,
+                                  margin: new EdgeInsets.symmetric(
+                                      horizontal: 10.0,
+                                      vertical: 6.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0),
+                                        // topRight: Radius.circular(10.0),
+                                        // bottomRight: Radius.circular(10.0),
+                                        // topLeft: Radius.circular(10.0),
+                                        // bottomLeft: Radius.circular(10.0),
+                                      ),
+                                    ),
+                                    margin: const EdgeInsets.only(
+                                        top: 5,
+                                        left: 5,
+                                        bottom: 5,
+                                        right: 5),
+                                    child: ListTile(
+                                      contentPadding:
+                                      EdgeInsets.symmetric(
+                                          horizontal: 10.0,
+                                          vertical: 10.0),
+                                      leading: Container(
+                                        padding: EdgeInsets.only(
+                                            right: 12.0),
+                                        decoration: new BoxDecoration(
+                                            border: new Border(
+                                                right: new BorderSide(
+                                                    width: 5.0,
+                                                    color: Colors
+                                                        .blue))),
+                                        child: Image.asset(
+                                          "assets/pending_ap.png",
+                                          height: 70,
+                                          width: 60,
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                      title: Padding(
+                                        padding:
+                                        const EdgeInsets.all(2.0),
+                                        child: Text(
+                                          notificationlist.name
+                                              .toUpperCase(),
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              color: Colors.orange,
+                                              fontWeight:
+                                              FontWeight.w200),
+                                        ),
+                                      ),
+                                      // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
 
-                                                subtitle: Column(
-                                                  children: <Widget>[
-                                                    Text.rich(
-                                                      TextSpan(
-                                                        style: TextStyle(
-                                                            fontSize: 17,
-                                                            color:
-                                                                Colors.black54),
-                                                        children: [
-                                                          TextSpan(
-                                                            text: '$dateFrom',
-                                                          ),
-                                                          WidgetSpan(
-                                                            child: Icon(
-                                                                Icons
-                                                                    .arrow_right_sharp,
-                                                                color: Colors
-                                                                    .black54),
-                                                          ),
-                                                          TextSpan(
-                                                            text: '$dateTo',
-                                                          )
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
+                                      subtitle: Column(
+                                        children: <Widget>[
+                                          Text.rich(
+                                            TextSpan(
+                                              style: TextStyle(
+                                                  fontSize: 17,
+                                                  color:
+                                                  Colors.black54),
+                                              children: [
+                                                TextSpan(
+                                                  text: '$dateFrom',
                                                 ),
-                                                // trailing:
-                                                //  Icon(Icons.keyboard_arrow_right_rounded, color: Colors.white, size: 30.0)),
-                                              ),
+                                                WidgetSpan(
+                                                  child: Icon(
+                                                      Icons
+                                                          .arrow_right_sharp,
+                                                      color: Colors
+                                                          .black54),
+                                                ),
+                                                TextSpan(
+                                                  text: '$dateTo',
+                                                )
+                                              ],
                                             ),
                                           )
-                                        : Card(
-                                            elevation: 8.0,
-                                            margin: new EdgeInsets.symmetric(
-                                                horizontal: 10.0,
-                                                vertical: 6.0),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.white54,
-                                                borderRadius: BorderRadius.all(
-                                                  Radius.circular(10.0),
-                                                  // topRight: Radius.circular(10.0),
-                                                  // bottomRight: Radius.circular(10.0),
-                                                  // topLeft: Radius.circular(10.0),
-                                                  // bottomLeft: Radius.circular(10.0),
-                                                ),
-                                              ),
-                                              margin: const EdgeInsets.only(
-                                                  top: 5,
-                                                  left: 5,
-                                                  bottom: 5,
-                                                  right: 5),
-                                              child: ListTile(
-                                                contentPadding:
-                                                    EdgeInsets.symmetric(
-                                                        horizontal: 10.0,
-                                                        vertical: 10.0),
-                                                leading: Container(
-                                                  padding: EdgeInsets.only(
-                                                      right: 12.0),
-                                                  decoration: new BoxDecoration(
-                                                      border: new Border(
-                                                          right: new BorderSide(
-                                                              width: 5.0,
-                                                              color: Colors
-                                                                  .green))),
-                                                  child: Image.asset(
-                                                    "assets/approved_ap.png",
-                                                    height: 70,
-                                                    width: 60,
-                                                    fit: BoxFit.contain,
-                                                  ),
-                                                ),
-                                                title: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(2.0),
-                                                  child: Text(
-                                                    notificationlist.name
-                                                        .toUpperCase(),
-                                                    style: TextStyle(
-                                                        fontSize: 15,
-                                                        color: Colors.orange,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                ),
-                                                // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
+                                        ],
+                                      ),
+                                      // trailing:
+                                      //  Icon(Icons.keyboard_arrow_right_rounded, color: Colors.white, size: 30.0)),
+                                    ),
+                                  ),
+                                )
+                                    : Card(
+                                  elevation: 8.0,
+                                  margin: new EdgeInsets.symmetric(
+                                      horizontal: 10.0,
+                                      vertical: 6.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white54,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0),
+                                        // topRight: Radius.circular(10.0),
+                                        // bottomRight: Radius.circular(10.0),
+                                        // topLeft: Radius.circular(10.0),
+                                        // bottomLeft: Radius.circular(10.0),
+                                      ),
+                                    ),
+                                    margin: const EdgeInsets.only(
+                                        top: 5,
+                                        left: 5,
+                                        bottom: 5,
+                                        right: 5),
+                                    child: ListTile(
+                                      contentPadding:
+                                      EdgeInsets.symmetric(
+                                          horizontal: 10.0,
+                                          vertical: 10.0),
+                                      leading: Container(
+                                        padding: EdgeInsets.only(
+                                            right: 12.0),
+                                        decoration: new BoxDecoration(
+                                            border: new Border(
+                                                right: new BorderSide(
+                                                    width: 5.0,
+                                                    color: Colors
+                                                        .green))),
+                                        child: Image.asset(
+                                          "assets/approved_ap.png",
+                                          height: 70,
+                                          width: 60,
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                      title: Padding(
+                                        padding:
+                                        const EdgeInsets.all(2.0),
+                                        child: Text(
+                                          notificationlist.name
+                                              .toUpperCase(),
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              color: Colors.orange,
+                                              fontWeight:
+                                              FontWeight.bold),
+                                        ),
+                                      ),
+                                      // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
 
-                                                subtitle: Column(
-                                                  children: <Widget>[
-                                                    Text.rich(
-                                                      TextSpan(
-                                                        style: TextStyle(
-                                                            fontSize: 17,
-                                                            color:
-                                                                Colors.black54),
-                                                        children: [
-                                                          TextSpan(
-                                                            text: '$dateFrom',
-                                                          ),
-                                                          WidgetSpan(
-                                                            child: Icon(
-                                                                Icons
-                                                                    .arrow_right_sharp,
-                                                                color: Colors
-                                                                    .black54),
-                                                          ),
-                                                          TextSpan(
-                                                            text: '$dateTo',
-                                                          )
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
+                                      subtitle: Column(
+                                        children: <Widget>[
+                                          Text.rich(
+                                            TextSpan(
+                                              style: TextStyle(
+                                                  fontSize: 17,
+                                                  color:
+                                                  Colors.black54),
+                                              children: [
+                                                TextSpan(
+                                                  text: '$dateFrom',
                                                 ),
-                                                // trailing:
-                                                //  Icon(Icons.keyboard_arrow_right_rounded, color: Colors.white, size: 30.0)),
-                                              ),
+                                                WidgetSpan(
+                                                  child: Icon(
+                                                      Icons
+                                                          .arrow_right_sharp,
+                                                      color: Colors
+                                                          .black54),
+                                                ),
+                                                TextSpan(
+                                                  text: '$dateTo',
+                                                )
+                                              ],
                                             ),
-                                          );
+                                          )
+                                        ],
+                                      ),
+                                      // trailing:
+                                      //  Icon(Icons.keyboard_arrow_right_rounded, color: Colors.white, size: 30.0)),
+                                    ),
+                                  ),
+                                );
                               });
                         } else
                           return Center(
