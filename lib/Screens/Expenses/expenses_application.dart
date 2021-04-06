@@ -12,6 +12,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 final PermissionHandler permissionHandler = PermissionHandler();
 
@@ -33,6 +34,7 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
   String device;
   String action_check;
   FocusNode focusNode = new FocusNode();
+  ProgressDialog pr;
   @override
   void initState() {
     // TODO: implement initState
@@ -58,15 +60,12 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
 
   //List<Asset> imagesList = List<Asset>();
   File image;
-
   var leaveID;
-  bool isChecked = false;
   var labels;
   TextEditingController _textEditingController = TextEditingController();
   TextEditingController _textEditingController2 = TextEditingController();
   var msg;
   var kmvalue;
-
   var ExpensesType;
 
   DateTime currentDate = DateTime.now();
@@ -87,89 +86,96 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
   }
 
   Future uploadmultipleimage() async {
+    setState(() {
+      pr.show();
+    });
     var url = All_API().baseurl + All_API().api_upload_expense;
-
+    print("uploadExpenses url -------> " +url);
     Map<String, String> headers = {
       All_API().key: All_API().keyvalue,
       'Content-Type': 'multipart/form-data'
     };
     //String imageMulti=image.path.split('/image_picker').last;
     //String path=All_API().baseurl_img+'/uploads/employee/';
-    print("Path Image -------> "+uniqID+" "+leaveID+" "+ExpensesType+" "+kmvalue+" "+msg+" "+dateFrom);
+    print("Path Image -------> " +
+        uniqID +
+        " " +
+        leaveID +
+        " " +
+        ExpensesType +
+        " " +
+        kmvalue +
+        " " +
+        msg +
+        " " +
+        dateFrom);
     var request = http.MultipartRequest('POST', Uri.parse(url));
+    final file = await http.MultipartFile.fromPath('image[]', image.path);
     request.fields['employee_id'] = uniqID;
     request.fields['expense_id'] = leaveID;
     request.fields['type'] = ExpensesType;
     request.fields['value'] = kmvalue;
     request.fields['description'] = msg;
     request.fields['date'] = dateFrom;
-    List<File> fileImageArray = [];
-
-    /*for(int i=0;i<imagesList.length;i++){
-      var joinImage=imagesList[i].name;
-      if (joinImage.startsWith('&&') && joinImage.endsWith('##')) {
-        imagesList[i] = (await base64Decode('assets')) as Asset;
-      }
-      var path = await FlutterAbsolutePath.getAbsolutePath(imagesList[i].identifier);
-      //final appDir = await syspaths.getApplicationDocumentsDirectory();
-      print("Path Image -------> "+path.splitMapJoin('/'));
-      print("Path Image join -------> "+imagesList[i].name);
-      File tempFile = File(path);
-      String image=tempFile.path.split('/').last;
-      print("Path Image New -------> "+tempFile.path.split('/').last);
-      print("Path Image New -------> "+imagesList.join(',').trim());
-      request.files.add(await http.MultipartFile.fromPath('image[]',imagesList[0].name));
-    }*/
-    request.files.add(await http.MultipartFile.fromPath('image[]', image.path));
+    request.files.add(file);
     request.headers.addAll(headers);
 
-    http.StreamedResponse response = await request.send();
-    var resopnss= await http.Response.fromStream(response);
-    var jsonData = jsonDecode(resopnss.body);
-    print("Expenses---> : "+resopnss.body);
-    String mssg=jsonData['msg'];
-    if (response.statusCode == 200) {
-      print("if Expenses---> : Your Expenses Uploaded "+ mssg );
-      setState(() {
-        FocusScope.of(context).requestFocus(focusNode);
-        final snackBar = SnackBar(content: Text(mssg,style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.red,);
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MyTrackExpenses(),
-          ),
-        );
-      });
+    try{
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      // http.StreamedResponse response = await request.send();
+      // var resopnss = await http.Response.fromStream(response);
+      var jsonData = jsonDecode(response.body);
+      print("Expenses---> : " + response.body);
+      String mssg = jsonData['msg'];
+      if (response.statusCode == 200) {
+        print("if Expenses---> : Your Expenses Uploaded " + mssg);
+        setState(() {
+          FocusScope.of(context).requestFocus(focusNode);
+          final snackBar = SnackBar(
+            content: Text(
+              mssg,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: Colors.red,
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-      print(await response.stream.bytesToString());
-    } else {
-      print("else Expenses---> : Your Expenses Not Uploaded");
-      setState(() {
-        final snackBar = SnackBar(
-          content: Text(
-            'Your Expenses Not Uploaded',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: Colors.red,
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MyTrackExpenses(),
-          ),
-        );
+        });
+        return null;
 
-      });
-      print(response.reasonPhrase);
+      } else {
+        print("else Expenses---> : Your Expenses Not Uploaded");
+        setState(() {
+          final snackBar = SnackBar(
+            content: Text(
+              'Your Expenses Not Uploaded',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: Colors.red,
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MyTrackExpenses(),
+            ),
+          );
+        });
+        print(response.reasonPhrase);
+      }
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      _resetState();
+      return responseData;
+    }catch(e){
+      return(e);
     }
+
   }
 
   ServiceStatus serviceStatus;
 
   String selectedvalue;
-  // ignore: deprecated_member_use
   List<dynamic> ExpensesTypeList = List();
   Future ExpensesStudent() async {
     serviceStatus =
@@ -201,9 +207,24 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
   int leaveIndex = -1;
   List<Widget> list = null;
 
-  String _errorMessage;
   @override
   Widget build(BuildContext context) {
+    //============================================= loading dialoge
+    pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
+
+    //Optional
+    pr.style(
+      message: 'Please wait...',
+      borderRadius: 10.0,
+      backgroundColor: Colors.white,
+      progressWidget: CircularProgressIndicator(),
+      elevation: 10.0,
+      insetAnimCurve: Curves.easeInOut,
+      progressTextStyle: TextStyle(
+          color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+      messageTextStyle: TextStyle(
+          color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600),
+    );
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -264,7 +285,6 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
                                               0, 5, 0, 20),
                                           child: RaisedButton(
                                             color: Colors.white,
-
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(5.0)),
@@ -310,17 +330,19 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
                                 Container(
                                   padding:
                                       const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                                  child: Text('Type of Expenses',style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold)),
+                                  child: Text('Type of Expenses',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold)),
                                 ),
                                 Column(
                                   children: <Widget>[
                                     DropdownButton(
                                       isExpanded: true,
-                                      hint: Text("Select Expenses",style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold)),
+                                      hint: Text("Select Expenses",
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold)),
                                       value: selectedvalue,
                                       items: ExpensesTypeList.map((explist) {
                                         return DropdownMenuItem(
@@ -384,7 +406,7 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
                                   height: 20,
                                 ),
                                 Container(
-                                  height: 200,
+                                  height: 150,
                                   child: Column(
                                     children: [
                                       Row(
@@ -406,27 +428,17 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
                                               hoverElevation: 40.0,
                                               onPressed: () {
                                                 pickImages();
-                                              })
+                                              }),
+                                          CircleAvatar(
+                                            backgroundImage: image == null
+                                                ? NetworkImage(
+                                                'https://git.unilim.fr/assets/no_group_avatar-4a9d347a20d783caee8aaed4a37a65930cb8db965f61f3b72a2e954a0eaeb8ba.png')
+                                                : FileImage(image),
+                                            radius: 50.0,
+                                          ),
                                         ],
                                       ),
-                                      /*Expanded(
-                                        child:
-                                        GridView.count(
-                                          scrollDirection: Axis.vertical,
-                                          crossAxisCount: 3,
-                                          children: List.generate(imagesList.length, (index) {
-                                            Asset asset = imagesList[index];
-                                            //uploadImage=asset.name[index];
-                                            print("Assets----->"+asset.name);
-                                            return AssetThumb(
-                                              asset: asset,
-                                              width: 300,
-                                              height: 300,
-                                            );
-                                          }),
-                                        ),
-                                      ),*/
-                                      //Image.file(File(image.path!=null?image.path:""))
+
                                     ],
                                   ),
                                 ),
@@ -439,15 +451,16 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
                                               vertical: 20.0, horizontal: 16.0),
                                           child: Text(
                                             "APPLY EXPENSES",
-                                            style: TextStyle(
-                                                color: Colors.white),
+                                            style:
+                                                TextStyle(color: Colors.white),
                                           ),
                                         ),
                                         color: Colors.orange,
                                         hoverColor: Colors.blue[1000],
                                         hoverElevation: 40.0,
                                         onPressed: () {
-                                          uploadmultipleimage();
+                                          _startUploading();
+                                          //uploadmultipleimage();
                                         })),
                               ])))))),
     );
@@ -458,30 +471,64 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
     kmvalue = _textEditingController.text;
   }
 
-  Future<void> pickImages() async {
-    /*List<Asset> resultList = List<Asset>();
+  void pickImages() async {
 
-    try {
-      resultList = await MultiImagePicker.pickImages(
-        maxImages: 300,
-        enableCamera: true,
-        selectedAssets: imagesList,
-        materialOptions: MaterialOptions(
-          actionBarTitle: "AYT ATTENDANCE",
-        ),
-      );
-    } on Exception catch (e) {
-      print(e);
-    }
-
-    setState(() {
-      imagesList = resultList;
-      //print("Selected Images---> " + imagesList.join(All_API().baseurl_img));
-    });*/
-    //File image;
     var imagePicker = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
       image = imagePicker;
+      Navigator.pop(context);
     });
+  }
+  void _startUploading() async {
+
+    if (image != null ||
+        dateFrom != '' ||
+        selectedvalue != '' ||
+        msg != '' ||
+        kmvalue != '' ) {
+      final Map<String, dynamic> response = await uploadmultipleimage();
+
+      // Check if any error occured
+      if (response == null) {
+        pr.hide();
+        messageAllert('User details updated successfully', 'Success');
+      }
+    } else {
+      messageAllert('Please Select a profile photo', 'Profile Photo');
+    }
+  }
+  void _resetState() {
+    setState(() {
+      pr.hide();
+      image = null;
+      dateFrom = null;
+      selectedvalue = null;
+      msg = null;
+      kmvalue = null;
+    });
+  }
+  messageAllert(String msg, String ttl) {
+    Navigator.pop(context);
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return new CupertinoAlertDialog(
+            title: Text(ttl),
+            content: Text(msg),
+            actions: [
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                child: Column(
+                  children: <Widget>[
+                    Text('Okay'),
+                  ],
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
   }
 }

@@ -142,8 +142,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     SizedBox(
                       height: 20,
                     ),
-                    Text(name!=null?name:"ADIYOGI",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.blue[1000])),
-                    Text(userphn!=null?userphn:"1234567890",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.blue[1000])),
+                    name == null ? Text("ADIYOGI TECHNOSOFT") :
+                    Text("$name",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.blue[1000])),
+                    userphn == null ? Text("**********"):
+                    Text("$userphn",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.blue[1000])),
                     SizedBox(
                       height: 10,
                     ),

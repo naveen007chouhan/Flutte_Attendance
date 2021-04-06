@@ -35,8 +35,8 @@ class _DashboardState extends State<Dashboard> {
   String workingHour;
   String accuuracy;
 
-  String accuuracyPer;
-  String accuuracy_meter;
+  String _accuuracyPer;
+  String _accuuracy_meter;
   String statuscode;
   String s1;
   String s2;
@@ -45,7 +45,7 @@ class _DashboardState extends State<Dashboard> {
     // TODO: implement initState
     super.initState();
     getData();
-    showData();
+
   }
 
   getData() async {
@@ -58,10 +58,11 @@ class _DashboardState extends State<Dashboard> {
       action = sharedPreferences.getString("");
       address = sharedPreferences.getString("address");
       device = sharedPreferences.getString("device_id");
+      showData(uniqID,device);
     });
   }
 
-  showData() {
+  showData(String uniqID,String device) {
     trackdashStudent(uniqID, device);
   }
 
@@ -70,12 +71,7 @@ class _DashboardState extends State<Dashboard> {
     var screenSize = MediaQuery.of(context).size;
     var duration = new Duration(seconds: 1);
     // Timer(duration, showData);
-    setState(() {
-      s1 = accuuracy_meter != null
-          ? "Your current location is accurate to " + accuuracy_meter
-          : '';
-      s2 = accuuracyPer != null ? " ,\nGPS accuracy level " + accuuracyPer : '';
-    });
+
 
     return Scaffold(
         body: Container(
@@ -132,11 +128,12 @@ class _DashboardState extends State<Dashboard> {
                     color: Colors.orange[100],
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Your current location is accurate to GPS accuracy level',
+
+                      child: _accuuracyPer!=null?Text(
+                        'Your current location is accurate to $_accuuracy_meter Mtr,GPS accuracy level $_accuuracyPer',
                         style:
                             TextStyle(fontSize: 15, color: Colors.blue[1000]),
-                      ),
+                      ):Text("Your current location is accurate to 0.00Mtr,GPS accuracy level 0%"),
                     ),
                   ),
                   SizedBox(
@@ -147,7 +144,6 @@ class _DashboardState extends State<Dashboard> {
                     height: 225,
                     width: MediaQuery.of(context).size.width,
                   ),
-
                   SizedBox(
                     height: 20,
                   ),
@@ -199,17 +195,17 @@ class _DashboardState extends State<Dashboard> {
       setState(() {
         Map jasonData = jsonDecode(response.body);
         workingHour = jasonData['data'][0]['workRecord'][0]['difference_time'];
-        accuuracyPer =
+        _accuuracyPer =
             jasonData['data'][0]['locationRecord'][0]['accuracy_per'];
-        accuuracy_meter =
-            jasonData['data'][0]['locationRecord'][0]['accuracy_meter'];
+        _accuuracy_meter =
+        jasonData['data'][0]['locationRecord'][0]['accuracy_meter'];
         print('Dassboard : ' + jasonData.toString());
         print('DassboardData : ' +
             workingHour +
             " " +
-            accuuracyPer +
+            _accuuracyPer +
             " " +
-            accuuracy_meter);
+            _accuuracy_meter);
       });
     } else {
       final snackBar = SnackBar(
