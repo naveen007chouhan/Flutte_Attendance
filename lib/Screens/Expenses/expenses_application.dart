@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
@@ -125,46 +126,19 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
       final response = await http.Response.fromStream(streamedResponse);
       // http.StreamedResponse response = await request.send();
       // var resopnss = await http.Response.fromStream(response);
-      var jsonData = jsonDecode(response.body);
+      // var jsonData = jsonDecode(response.body);
+      final Map<String, dynamic> responseData = json.decode(response.body);
       print("Expenses---> : " + response.body);
-      String mssg = jsonData['msg'];
+      String mssg = responseData['msg'];
       if (response.statusCode == 200) {
         print("if Expenses---> : Your Expenses Uploaded " + mssg);
-        setState(() {
-          FocusScope.of(context).requestFocus(focusNode);
-          final snackBar = SnackBar(
-            content: Text(
-              mssg,
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            backgroundColor: Colors.red,
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-        });
         return null;
 
       } else {
         print("else Expenses---> : Your Expenses Not Uploaded");
-        setState(() {
-          final snackBar = SnackBar(
-            content: Text(
-              'Your Expenses Not Uploaded',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            backgroundColor: Colors.red,
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MyTrackExpenses(),
-            ),
-          );
-        });
         print(response.reasonPhrase);
       }
-      final Map<String, dynamic> responseData = json.decode(response.body);
+
       _resetState();
       return responseData;
     }catch(e){
@@ -386,7 +360,7 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
                                   autofocus: false,
                                   textInputAction: TextInputAction.newline,
                                   keyboardType: TextInputType.multiline,
-                                  maxLines: 5,
+                                  maxLines: 4,
                                   controller: _textEditingController2,
                                   onSubmitted:
                                       _giveData(_textEditingController2),
@@ -409,7 +383,7 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
                                   height: 150,
                                   child: Column(
                                     children: [
-                                      Row(
+                                      Column(
                                         children: [
                                           RaisedButton(
                                               child: Padding(
@@ -476,16 +450,25 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
     var imagePicker = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
       image = imagePicker;
-      Navigator.pop(context);
+      //Navigator.pop(context);
     });
   }
   void _startUploading() async {
-
+    print("Path Image -------> " +
+        image.toString() +
+        " " +
+        dateFrom +
+        " " +
+        selectedvalue +
+        " " +
+        kmvalue +
+        " " +
+        msg );
     if (image != null ||
-        dateFrom != '' ||
-        selectedvalue != '' ||
-        msg != '' ||
-        kmvalue != '' ) {
+        dateFrom != null ||
+        selectedvalue != null ||
+        msg != null ||
+        kmvalue != null ) {
       final Map<String, dynamic> response = await uploadmultipleimage();
 
       // Check if any error occured
@@ -494,6 +477,7 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
         messageAllert('User details updated successfully', 'Success');
       }
     } else {
+      pr.hide();
       messageAllert('Please Select a profile photo', 'Profile Photo');
     }
   }

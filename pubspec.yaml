@@ -20,6 +20,8 @@ dependencies:
   firebase_messaging: ^7.0.3
   overlay_support: ^1.0.5
 
+  month_picker_dialog: any
+
   pull_to_refresh: ^1.6.3
 
   flutter_spinkit: ^3.1.0
@@ -30,7 +32,8 @@ dependencies:
   progress_dialog: ^1.2.4
   table_calendar: ^2.2.1
   shared_preferences: ^0.5.4+5
-  intl: ^0.16.1
+#  intl: ^0.16.1
+  intl: any
   flutter_local_notifications: ^4.0.1+1
   barcode_scan: ^1.0.0
   bubbled_navigation_bar: ^0.0.3

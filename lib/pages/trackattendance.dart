@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TrackAttendance extends StatefulWidget {
@@ -29,7 +30,7 @@ class TrackAttendanceState extends State<TrackAttendance> {
   String image;
   String dateforattendance;
   String formattedDateString;
-
+DateTime selectedDate;
   var statuseCode;
   @override
   void initState() {
@@ -67,7 +68,26 @@ class TrackAttendanceState extends State<TrackAttendance> {
   }
 
   DateTime currentDate = DateTime.now();
-  Future<void> _selectDateFrom(BuildContext context) async {
+
+  void handleReadOnlyInputClick(context) {
+    var initialDate=currentDate;
+    showMonthPicker(
+      context: context,
+      firstDate: DateTime(DateTime.now().year - 1, 5),
+      lastDate: DateTime(DateTime.now().year + 1, 9),
+      initialDate: selectedDate ?? initialDate,
+      //locale: Locale("es"),
+    ).then((date) {
+      if (date != null) {
+        setState(() {
+          selectedDate = date;
+          formattedDateString = DateFormat("yyyy-MM").format(selectedDate);
+          print("formattedDateString:--> " + formattedDateString);
+        });
+      }
+    });
+  }
+  /*Future<void> _selectDateFrom(BuildContext context) async {
     final DateTime pickedDate = await showDatePicker(
         context: context,
         initialDate: currentDate,
@@ -83,7 +103,7 @@ class TrackAttendanceState extends State<TrackAttendance> {
         formattedDateString = DateFormat("yyyy-MM").format(formatteddate);
         print("formattedDateString:--> " + formattedDateString);
       });
-  }
+  }*/
 
   Future<TrackAttendanceModel> notification() async {
     print("dateforattendance:--> " + formattedDateString);
@@ -192,7 +212,8 @@ class TrackAttendanceState extends State<TrackAttendance> {
                             //onpressed gets called when the button is tapped.
                             print("FlatButton tapped");
                             //Navigator.push(context, MaterialPageRoute(builder: (context) => SearchPage()));
-                            _selectDateFrom(context);
+                            //_selectDateFrom(context);
+                            handleReadOnlyInputClick(context);
                           },
                         ),
                       ),
