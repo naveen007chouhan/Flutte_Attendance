@@ -2,9 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:AYT_Attendence/API/api.dart';
+import 'package:AYT_Attendence/Screens/chat2/auth2.dart';
+import 'package:AYT_Attendence/Screens/chat2/database.dart';
+import 'package:AYT_Attendence/Screens/chat2/helperfunctions2.dart';
 import 'package:AYT_Attendence/pages/EaelyCheck_IN_OUT.dart';
 import 'package:AYT_Attendence/sidebar/image_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,7 +28,11 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  String path=All_API().baseurl_img+All_API().profile_img_path;
   String name;
+  String userimg;
+  String useremail;
+  String userpassword;
   String date;
   String uniqID;
   String latitude;
@@ -40,6 +50,9 @@ class _DashboardState extends State<Dashboard> {
   String statuscode;
   String s1;
   String s2;
+  AuthService2 authService = new AuthService2();
+  DatabaseMethods2 databaseMethods = new DatabaseMethods2();
+  final FirebaseAuth auth = FirebaseAuth.instance;
   @override
   void initState() {
     // TODO: implement initState
@@ -50,8 +63,14 @@ class _DashboardState extends State<Dashboard> {
 
   getData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    QuerySnapshot userInfoSnapshot = await DatabaseMethods2().getUserInfo(useremail);
+    print(""+userInfoSnapshot.documents[0].data()["userEmail"]);
+    var user = userInfoSnapshot.documents[0].data()["userEmail"];
     setState(() {
       name = sharedPreferences.getString("name");
+      userimg = sharedPreferences.getString("image");
+      useremail = sharedPreferences.getString("email");
+      userpassword = sharedPreferences.getString("password");
       uniqID = sharedPreferences.getString("unique_id");
       latitude = sharedPreferences.getString("lat");
       longitude = sharedPreferences.getString("long");
@@ -60,10 +79,72 @@ class _DashboardState extends State<Dashboard> {
       device = sharedPreferences.getString("device_id");
       showData(uniqID,device);
     });
+    String image=path+userimg;
+    if(user == useremail){
+      signIn();
+    }else{
+      singUp(image);
+    }
   }
 
   showData(String uniqID,String device) {
     trackdashStudent(uniqID, device);
+  }
+  signIn() async {
+    await authService
+        .signInWithEmailAndPassword(
+        useremail, userpassword)
+        .then((result) async {
+      if (result != null)  {
+        QuerySnapshot userInfoSnapshot =
+        await DatabaseMethods2().getUserInfo(useremail);
+        HelperFunctions2.saveUserLoggedInSharedPreference(true);
+        HelperFunctions2.saveUserNameSharedPreference(
+            userInfoSnapshot.documents[0].data()["userName"]);
+        HelperFunctions2.saveUserEmailSharedPreference(
+            userInfoSnapshot.documents[0].data()["userEmail"]);
+        /*Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => ChatRoom()));*/
+      } else {
+        setState(() {
+          //isLoading = false;
+          //show snackbar
+        });
+      }
+    });
+  }
+
+  singUp(String image) async {
+    try{
+      await authService.signUpWithEmailAndPassword(useremail,userpassword)
+          .then((result){
+        if(result != null){
+          Map<String,String> userDataMap = {
+
+            "userName" : name,
+            "userEmail" : useremail,
+            "userImage" : image,
+          };
+          print("Result---->"+result.toString());
+          databaseMethods.addUserInfo(userDataMap);
+          HelperFunctions2.saveUserLoggedInSharedPreference(true);
+          HelperFunctions2.saveUserNameSharedPreference(name);
+          HelperFunctions2.saveUserEmailSharedPreference(useremail);
+          HelperFunctions2.saveUserImageSharedPreference(image);
+          /*Navigator.pushReplacement(context, MaterialPageRoute(
+              builder: (context) => ChatRoom()
+          ));*/
+        }
+      });
+    }catch(signUpError){
+      print("SignUP Error!!!!!!!!!!--->"+signUpError.code);
+      if(signUpError is PlatformException) {
+        if(signUpError.code == '[firebase_auth/email-already-in-use] The email address is already in use by another account') {
+          signIn();
+        }
+      }
+    }
+
   }
 
   @override

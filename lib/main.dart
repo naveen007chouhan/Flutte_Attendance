@@ -4,6 +4,7 @@ import 'package:AYT_Attendence/pages/FCM.dart';
 import 'package:AYT_Attendence/pages/GeneralLeaves.dart';
 import 'package:AYT_Attendence/pages/trackattendance.dart';
 import 'package:AYT_Attendence/sidebar/TabItem.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -112,6 +113,10 @@ class MyHomePageState extends State<MyHomePage> {
     _getCurrentLocation();
     getCurrentDate();
     getMessage();
+    Firebase.initializeApp().whenComplete(() {
+      print("completed");
+      setState(() {});
+    });
   }
 
   getCurrentDate()async{

@@ -10,6 +10,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -63,14 +64,14 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
   File image;
   var leaveID;
   var labels;
-  TextEditingController _textEditingController = TextEditingController();
-  TextEditingController _textEditingController2 = TextEditingController();
-  var msg;
+  TextEditingController _ExpPriceController = TextEditingController();
+  TextEditingController _ExpMsgController2 = TextEditingController();
+  var msg = null;
   var kmvalue;
   var ExpensesType;
 
   DateTime currentDate = DateTime.now();
-  var dateFrom;
+  String dateFrom;
   Future<void> _selectDateFrom(BuildContext context) async {
     final DateTime pickedDate = await showDatePicker(
         context: context,
@@ -138,7 +139,6 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
         print("else Expenses---> : Your Expenses Not Uploaded");
         print(response.reasonPhrase);
       }
-
       _resetState();
       return responseData;
     }catch(e){
@@ -339,9 +339,8 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
                                 ),
                                 TextField(
                                   autofocus: false,
-                                  controller: _textEditingController,
-                                  onSubmitted:
-                                      _giveData(_textEditingController),
+                                  controller: _ExpPriceController,
+                                  keyboardType: TextInputType.number,
                                   decoration: new InputDecoration(
                                     labelText: ExpensesType != null
                                         ? ExpensesType
@@ -360,10 +359,9 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
                                   autofocus: false,
                                   textInputAction: TextInputAction.newline,
                                   keyboardType: TextInputType.multiline,
-                                  maxLines: 4,
-                                  controller: _textEditingController2,
-                                  onSubmitted:
-                                      _giveData(_textEditingController2),
+                                  maxLines: 5,
+                                  controller: _ExpMsgController2,
+
                                   decoration: new InputDecoration(
                                     labelText: "Description",
                                     enabledBorder: UnderlineInputBorder(
@@ -380,7 +378,7 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
                                   height: 20,
                                 ),
                                 Container(
-                                  height: 150,
+                                  height: 170,
                                   child: Column(
                                     children: [
                                       Column(
@@ -408,7 +406,7 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
                                                 ? NetworkImage(
                                                 'https://git.unilim.fr/assets/no_group_avatar-4a9d347a20d783caee8aaed4a37a65930cb8db965f61f3b72a2e954a0eaeb8ba.png')
                                                 : FileImage(image),
-                                            radius: 50.0,
+                                            radius: 60.0,
                                           ),
                                         ],
                                       ),
@@ -433,17 +431,21 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
                                         hoverColor: Colors.blue[1000],
                                         hoverElevation: 40.0,
                                         onPressed: () {
-                                          _startUploading();
+                                          if(_ExpPriceController.text.isNotEmpty&&_ExpMsgController2.text.isNotEmpty&&dateFrom!=null&&selectedvalue!=null){
+                                            msg = _ExpMsgController2.text;
+                                            kmvalue = _ExpPriceController.text;
+                                            startUploading();
+                                          }else{
+                                            messageAllert(' Please Fill All Detail ', ' Form Not Submited ');
+                                          }
+
                                           //uploadmultipleimage();
                                         })),
                               ])))))),
     );
   }
 
-  _giveData(TextEditingController textEditingController) {
-    msg = _textEditingController2.text;
-    kmvalue = _textEditingController.text;
-  }
+
 
   void pickImages() async {
 
@@ -453,32 +455,20 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
       //Navigator.pop(context);
     });
   }
-  void _startUploading() async {
-    print("Path Image -------> " +
-        image.toString() +
-        " " +
-        dateFrom +
-        " " +
-        selectedvalue +
-        " " +
-        kmvalue +
-        " " +
-        msg );
-    if (image != null ||
-        dateFrom != null ||
-        selectedvalue != null ||
-        msg != null ||
-        kmvalue != null ) {
+
+  void startUploading() async {
+    print("_startUploading -------> " + msg);
+    if (image != null  ) {
       final Map<String, dynamic> response = await uploadmultipleimage();
 
-      // Check if any error occured
+      //Check if any error occured
       if (response == null) {
         pr.hide();
         messageAllert('User details updated successfully', 'Success');
       }
     } else {
       pr.hide();
-      messageAllert('Please Select a profile photo', 'Profile Photo');
+      messageAllert(' Please Select a profile photo ', ' Select Photo ');
     }
   }
   void _resetState() {

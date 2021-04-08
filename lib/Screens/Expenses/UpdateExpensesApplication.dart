@@ -47,8 +47,8 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
   var msg;
   var kmvalue;
   var ExpensesType;
-  TextEditingController _textEditingController = TextEditingController();
-  TextEditingController _textEditingController2 = TextEditingController();
+  TextEditingController _ExpPriceController = TextEditingController();
+  TextEditingController _ExpMsgController2 = TextEditingController();
 
   DateTime currentDate = DateTime.now();
   var dateFrom;
@@ -105,12 +105,10 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
     http.StreamedResponse response = await request.send();
     final respStr = await response.stream.bytesToString();
     print("Update Expenses ----> "+respStr);
-    final snackBar = SnackBar(content: Text('Your Expenses Uploaded',style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.green,);
-    //ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
     if (response.statusCode == 200) {
-      Navigator.pushReplacement(
-        context,MaterialPageRoute(builder: (context) => MyTrackExpenses(),),);
       print(await response.stream.bytesToString());
+      return null;
     } else {
       print(response.reasonPhrase);
     }
@@ -284,7 +282,7 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
                                 ),
                                 TextField(
                                   autofocus: false,
-                                  controller: _textEditingController,
+                                  controller: _ExpPriceController,
                                   decoration: new InputDecoration(
                                     hintText: kmvalue!=null?kmvalue:'Enter Value',
                                     labelText: "Expenses Price: "+ExpensesType!=null?ExpensesType:'Expenses Price',
@@ -303,9 +301,7 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
                                   textInputAction: TextInputAction.newline,
                                   keyboardType: TextInputType.multiline,
                                   maxLines: 5,
-                                  controller: _textEditingController2,
-                                  onSubmitted:
-                                  _giveData(_textEditingController2),
+                                  controller: _ExpMsgController2,
                                   decoration: new InputDecoration(
                                     hintText: msg!=null?msg:'Enter Description',
                                     labelText: msg != null
@@ -372,16 +368,18 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
                                         hoverColor: Colors.blue[1000],
                                         hoverElevation: 40.0,
                                         onPressed: () {
-                                          uploadmultipleimage();
+                                          if(_ExpPriceController.text.isNotEmpty&&_ExpMsgController2.text.isNotEmpty&&dateFrom!=null&&selectedvalue!=null){
+                                            msg = _ExpMsgController2.text;
+                                            kmvalue = _ExpPriceController.text;
+                                            uploadmultipleimage();
+                                          }
+
                                         })),
                               ])))))),
     );
   }
 
-  _giveData(TextEditingController textEditingController) {
-    msg = _textEditingController2.text;
-    kmvalue = _textEditingController.text;
-  }
+
 
   Future<void> pickImages() async {
     /*List<Asset> resultList = List<Asset>();

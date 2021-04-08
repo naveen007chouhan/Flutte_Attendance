@@ -1,6 +1,8 @@
 import 'package:AYT_Attendence/API/api.dart';
 import 'package:AYT_Attendence/Screens/Expenses/track_expenses.dart';
 import 'package:AYT_Attendence/Screens/LoginScreen/login2.dart';
+import 'package:AYT_Attendence/Screens/chat2/Chating2.dart';
+import 'package:AYT_Attendence/Screens/chat2/helperfunctions2.dart';
 import 'package:AYT_Attendence/Screens/leavelists/track_leave.dart';
 import 'package:AYT_Attendence/Screens/notification/NotificationScreen.dart';
 import 'package:AYT_Attendence/Screens/webViews/about_us.dart';
@@ -11,6 +13,7 @@ import 'package:AYT_Attendence/pages/GeneralLeaves.dart';
 import 'package:AYT_Attendence/pages/SalaryList.dart';
 import 'package:AYT_Attendence/pages/dashboard.dart';
 import 'package:AYT_Attendence/pages/trackattendance.dart';
+import 'package:AYT_Attendence/sidebar/bottom.dart';
 import 'package:AYT_Attendence/sidebar/foldable_sidebar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -79,11 +82,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
   String uniqId;
   String userphn;
   String userimg;
+  bool userIsLoggedIn;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getData();
+    getLoggedInState();
   }
   getData()async{
     SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
@@ -94,7 +99,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
       userimg=sharedPreferences.getString("image");
     });
   }
-
+  getLoggedInState() async {
+    await HelperFunctions2.getUserLoggedInSharedPreference().then((value){
+      setState(() {
+        userIsLoggedIn  = value;
+      });
+    });
+  }
   @override
   Widget build(BuildContext context) {
     String path=All_API().baseurl_img+All_API().profile_img_path;
@@ -171,7 +182,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ListTile(
               onTap: (){
                 print("Tapped Chat");
-                //Navigator.push(context, MaterialPageRoute(builder: (context) => MyAccountsPage(),),);
+                Navigator.push(context,
+                  MaterialPageRoute(builder: (context) =>
+                  userIsLoggedIn != null ? ChatRoom()
+                      : BottomNavBar(),),);
               },
               leading: Icon(Icons.chat,color: Colors.orange,),
               title: Text("Chat",style: TextStyle(color: Colors.orange),),

@@ -196,6 +196,7 @@ class _OTPScreenState extends State<OTPScreen> {
       var useruniqId = jasonData['data'][0]['user_unique_id'];
       var email = jasonData['data'][0]['email'];
       var phone = jasonData['data'][0]['phone'];
+      var password = jasonData['data'][0]['password'];
       var dob = jasonData['data'][0]['dob'];
       var joining_date = jasonData['data'][0]['joining_date'];
       var department_id = jasonData['data'][0]['department_id'];
@@ -208,6 +209,7 @@ class _OTPScreenState extends State<OTPScreen> {
       sharedPreferences.setString("user_unique_id", useruniqId);
       sharedPreferences.setString("email", email);
       sharedPreferences.setString("phone", phone);
+      sharedPreferences.setString("password", password);
       sharedPreferences.setString("dob", dob);
       sharedPreferences.setString("joining_date", joining_date);
       sharedPreferences.setString("department_id", department_id);
