@@ -6,9 +6,11 @@ import 'package:AYT_Attendence/Screens/leavelists/model/TrackLeaveModel.dart';
 import 'package:AYT_Attendence/Screens/leavelists/track_leave.dart';
 import 'package:AYT_Attendence/model/LeaveModel.dart';
 import 'package:AYT_Attendence/pages/dashboard.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_buttons/grouped_buttons.dart';
 import 'package:http/http.dart' as http;
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -40,6 +42,7 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
   String action_check;
   FocusNode focusNode = new FocusNode();
   String checkINmsg;
+  ProgressDialog pr;
   @override
   void initState() {
     // TODO: implement initState
@@ -100,7 +103,10 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
       });
   }
 
-  void sendLeave() async {
+  Future  sendLeave() async {
+    setState(() {
+      pr.show();
+    });
     String url = All_API().baseurl +All_API().api_apply_leave;
     print("leave_urlbody--> " + url);
     String body =jsonEncode({
@@ -114,23 +120,25 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
     };
     final http.Response response = await http.post(url,body:body,headers: headers);
     Map<String,dynamic> jasonData = jsonDecode(response.body);
-    String bodydetial = response.body;
-    String statusCode = response.statusCode.toString();
-    print("bodyss--> " + bodydetial.toString()+"  ///  "+statusCode);
-    checkINmsg=jasonData["msg"];
-    // _showToast(context,checkINmsg);
-      final snackBar = SnackBar(content: Text(checkINmsg,style: TextStyle(fontWeight: FontWeight.bold),));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-    if (response.statusCode == 200) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  MyTrackLeave()));
-    } else {
-
+    print("Expenses---> : " + response.body);
+    String mssg = jasonData['msg'];
+    try{
+      if (response.statusCode == 200) {
+        print("if Leave Application---> : Your Leave Uploaded "+ mssg);
+        messageAllert(mssg, 'Success');
+        return null;
+      } else {
+        print("else Leave Application---> : Your Leave Not Uploaded");
+        pr.hide();
+        messageAllert(mssg, 'Fail');
+        print(response.reasonPhrase);
+      }
+      _resetState();
+      return jasonData;
+    }catch(e){
+      return(e);
     }
+
   }
   Future loadStudent(String uniqID) async {
     //var endpointUrl ="http://adiyogitechnosoft.com/attendance_dev/api/leave/NODS5X5N5V2H2Z";
@@ -153,6 +161,22 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
 
   @override
   Widget build(BuildContext context) {
+    //============================================= loading dialoge
+    pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
+
+    //Optional
+    pr.style(
+      message: 'Please wait...',
+      borderRadius: 10.0,
+      backgroundColor: Colors.white,
+      progressWidget: CircularProgressIndicator(),
+      elevation: 10.0,
+      insetAnimCurve: Curves.easeInOut,
+      progressTextStyle: TextStyle(
+          color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+      messageTextStyle: TextStyle(
+          color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600),
+    );
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -345,7 +369,6 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
                                 TextField(
                                   autofocus: false,
                                   controller: _textEditingController,
-                                  onSubmitted: _giveData(_textEditingController),
                                   decoration: new InputDecoration(
                                     labelText:
                                     "Reason",
@@ -373,9 +396,14 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
                                         hoverColor: Colors.blue[1000],
                                         hoverElevation: 40.0,
                                         onPressed: () {
-
-                                          msg=_textEditingController.text;
-                                          sendLeave();
+                                          if(_textEditingController.text.isNotEmpty&&dateFrom!=null&&dateTo!=null&&selectedvalue!=null){
+                                            msg=_textEditingController.text;
+                                            startUploading();
+                                          }else{
+                                            messageAllert(' Please Fill All Detail ', ' Form Not Submited ');
+                                          }
+                                          //msg=_textEditingController.text;
+                                          //sendLeave();
                                           _showDialog(context);
                                         }
                                     )
@@ -420,8 +448,53 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
       },
     );
   }
-  _giveData(TextEditingController textEditingController) {
-    msg=_textEditingController.text;
+  void startUploading() async {
+    print("_startUploading -------> " + msg);
+
+      final Map<String, dynamic> response = await sendLeave();
+
+      //Check if any error occured
+      if (response == null) {
+        pr.hide();
+        messageAllert('Record save Successfully..', 'Success');
+      }
+
+  }
+  messageAllert(String msg, String ttl) {
+    Navigator.pop(context);
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return new CupertinoAlertDialog(
+            title: Text(ttl),
+            content: Text(msg),
+            actions: [
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                child: Column(
+                  children: <Widget>[
+                    Text('Okay'),
+                  ],
+                ),
+                onPressed: () {
+
+                  Navigator.pop(context);
+
+                },
+              ),
+            ],
+          );
+        });
+  }
+  void _resetState() {
+    setState(() {
+      pr.hide();
+      dateFrom = null;
+      dateTo = null;
+      selectedvalue = null;
+      msg = null;
+
+    });
   }
   // void _showToast(BuildContext context,String msg) {
   //   final scaffold = Scaffold.of(context);

@@ -6,12 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
 class EaelyCheck_IN_OUT extends StatefulWidget {
   @override
   leaveFeedState createState() => leaveFeedState();
 }
-
 class leaveFeedState extends State<EaelyCheck_IN_OUT> {
   String name;
   String date;
@@ -29,7 +27,6 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
     getData();
     trackdashStudent();
   }
-
   getData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
@@ -43,7 +40,6 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
       print("UNIQ ID --->" + uniqID);
     });
   }
-
   Future<TrackDashboardModel> trackdashStudent() async {
     String device_id = device;
     String unique_id = uniqID;
@@ -63,7 +59,6 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
     var requestUrl = endpointUrl + '?' + queryString;
     print(requestUrl);
     var response = await http.get(requestUrl, headers: headers);
-
     Map jasonData = jsonDecode(response.body);
     if(response.statusCode==200){
       //latecheckIN = jasonData['data'][0]['counterRecord'][0]['early_checkout'];
@@ -76,9 +71,7 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
       //print(latecheckIN.toString()+' latecheckIN : ' + earlycheckOUT.toString());//+" "+earlycheckOUT);//+" "+latecheckin+" "+earlycheckout);
       return TrackDashboardModel.fromJson(jasonData);
     }
-
   }
-
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
@@ -98,7 +91,6 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
                   children: <Widget>[
                     // Expanded(flex:2,child: ),
                     // Expanded(flex:2,child: ),
-
                     Container(
                       margin: new EdgeInsets.symmetric(horizontal: 5.0),
                       height: MediaQuery.of(context).size.height,
@@ -370,7 +362,6 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
                 children: <Widget>[
                   // Expanded(flex:2,child: ),
                   // Expanded(flex:2,child: )
-
                   Container(
                     margin: new EdgeInsets.symmetric(horizontal: 5.0),
                     height: MediaQuery.of(context).size.height,
@@ -572,7 +563,7 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
                                         Text(
                                           "Early CheckOut",
                                           style: TextStyle(
-                                              fontSize: 13,
+                                              fontSize: 12,
                                               color: Colors.black,
                                               fontWeight: FontWeight.bold),
                                         ),

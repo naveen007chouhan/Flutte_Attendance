@@ -92,7 +92,7 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
       pr.show();
     });
     var url = All_API().baseurl + All_API().api_upload_expense;
-    print("uploadExpenses url -------> " +url);
+    print("uploadExpenses url -------> " + url);
     Map<String, String> headers = {
       All_API().key: All_API().keyvalue,
       'Content-Type': 'multipart/form-data'
@@ -122,7 +122,7 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
     request.files.add(file);
     request.headers.addAll(headers);
 
-    try{
+    try {
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
       // http.StreamedResponse response = await request.send();
@@ -134,17 +134,17 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
       if (response.statusCode == 200) {
         print("if Expenses---> : Your Expenses Uploaded " + mssg);
         return null;
-
       } else {
         print("else Expenses---> : Your Expenses Not Uploaded");
+        pr.hide();
+        messageAllert(mssg, 'Fail');
         print(response.reasonPhrase);
       }
       _resetState();
       return responseData;
-    }catch(e){
-      return(e);
+    } catch (e) {
+      return (e);
     }
-
   }
 
   ServiceStatus serviceStatus;
@@ -361,7 +361,6 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
                                   keyboardType: TextInputType.multiline,
                                   maxLines: 5,
                                   controller: _ExpMsgController2,
-
                                   decoration: new InputDecoration(
                                     labelText: "Description",
                                     enabledBorder: UnderlineInputBorder(
@@ -404,13 +403,12 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
                                           CircleAvatar(
                                             backgroundImage: image == null
                                                 ? NetworkImage(
-                                                'https://git.unilim.fr/assets/no_group_avatar-4a9d347a20d783caee8aaed4a37a65930cb8db965f61f3b72a2e954a0eaeb8ba.png')
+                                                    'https://git.unilim.fr/assets/no_group_avatar-4a9d347a20d783caee8aaed4a37a65930cb8db965f61f3b72a2e954a0eaeb8ba.png')
                                                 : FileImage(image),
                                             radius: 60.0,
                                           ),
                                         ],
                                       ),
-
                                     ],
                                   ),
                                 ),
@@ -431,12 +429,19 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
                                         hoverColor: Colors.blue[1000],
                                         hoverElevation: 40.0,
                                         onPressed: () {
-                                          if(_ExpPriceController.text.isNotEmpty&&_ExpMsgController2.text.isNotEmpty&&dateFrom!=null&&selectedvalue!=null){
+                                          if (_ExpPriceController
+                                                  .text.isNotEmpty &&
+                                              _ExpMsgController2
+                                                  .text.isNotEmpty &&
+                                              dateFrom != null &&
+                                              selectedvalue != null) {
                                             msg = _ExpMsgController2.text;
                                             kmvalue = _ExpPriceController.text;
                                             startUploading();
-                                          }else{
-                                            messageAllert(' Please Fill All Detail ', ' Form Not Submited ');
+                                          } else {
+                                            messageAllert(
+                                                ' Please Fill All Detail ',
+                                                ' Form Not Submited ');
                                           }
 
                                           //uploadmultipleimage();
@@ -445,10 +450,7 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
     );
   }
 
-
-
   void pickImages() async {
-
     var imagePicker = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
       image = imagePicker;
@@ -458,19 +460,20 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
 
   void startUploading() async {
     print("_startUploading -------> " + msg);
-    if (image != null  ) {
+    if (image != null) {
       final Map<String, dynamic> response = await uploadmultipleimage();
 
       //Check if any error occured
       if (response == null) {
         pr.hide();
-        messageAllert('User details updated successfully', 'Success');
+        messageAllert('Record save Successfully..', 'Success');
       }
     } else {
       pr.hide();
       messageAllert(' Please Select a profile photo ', ' Select Photo ');
     }
   }
+
   void _resetState() {
     setState(() {
       pr.hide();
@@ -481,6 +484,7 @@ class LeaveApplicationWidgetState extends State<ExpensesApplication>
       kmvalue = null;
     });
   }
+
   messageAllert(String msg, String ttl) {
     Navigator.pop(context);
     showDialog(

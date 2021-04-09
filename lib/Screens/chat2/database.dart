@@ -1,10 +1,30 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DatabaseMethods2 {
-  Future addUserInfo(userData) async {
+  /*Future addUserInfo(userData) async {
     Firestore.instance.collection("users").add(userData).catchError((e) {
       print(e.toString());
+    });
+  }*/
+
+  Future addUserInfo(userData) async {
+    SharedPreferences sharedPreferences= await SharedPreferences.getInstance();
+    Firestore.instance.collection("users")
+        .doc(sharedPreferences.getString("email"))
+        .set(userData)
+        .catchError((e) {
+      print("Firebase SignUP Error--->"+e.toString());
+    });
+  }
+
+  Future updateUserInfo(userData,email) async {
+    Firestore.instance.collection('users')
+        .document(email)
+        .setData(userData)
+        .catchError((e) {
+      print("Firebase Update Error--->"+e.toString());
     });
   }
 
@@ -16,6 +36,14 @@ class DatabaseMethods2 {
         .catchError((e) {
       print(e.toString());
     });
+  }
+
+  getAllUser()async{
+    SharedPreferences sharedPreferences= await SharedPreferences.getInstance();
+    return Firestore.instance
+        .collection("users")
+        .where('userName', isNotEqualTo:sharedPreferences.getString("name"))
+        .getDocuments();
   }
 
   searchByName(String searchField) {
@@ -51,7 +79,7 @@ class DatabaseMethods2 {
         .document(chatRoomId)
         .collection("chats")
         .add(chatMessageData).catchError((e){
-          print(e.toString());
+      print(e.toString());
     });
   }
 

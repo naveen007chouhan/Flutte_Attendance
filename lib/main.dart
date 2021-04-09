@@ -89,19 +89,16 @@ class MyHomePageState extends State<MyHomePage> {
         print('Restricted');
         break;
       case GeolocationStatus.denied:
-        print('Denid');
+        print('Denied');
         break;
       case GeolocationStatus.unknown:
         print('Unknown');
         break;
       case GeolocationStatus.granted:
-        print('Granded');
+        print('Granted --> ');
         _getCurrentLocation();
         break;
     }
-
-
-
   }
 
   @override

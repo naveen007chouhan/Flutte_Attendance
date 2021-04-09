@@ -63,13 +63,14 @@ class _DashboardState extends State<Dashboard> {
 
   getData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
     QuerySnapshot userInfoSnapshot = await DatabaseMethods2().getUserInfo(useremail);
-    print(""+userInfoSnapshot.documents[0].data()["userEmail"]);
-    var user = userInfoSnapshot.documents[0].data()["userEmail"];
+    String user ;
     setState(() {
       name = sharedPreferences.getString("name");
       userimg = sharedPreferences.getString("image");
       useremail = sharedPreferences.getString("email");
+      print("email-->"+useremail);
       userpassword = sharedPreferences.getString("password");
       uniqID = sharedPreferences.getString("unique_id");
       latitude = sharedPreferences.getString("lat");
@@ -78,13 +79,17 @@ class _DashboardState extends State<Dashboard> {
       address = sharedPreferences.getString("address");
       device = sharedPreferences.getString("device_id");
       showData(uniqID,device);
+      for(int i=0;userInfoSnapshot.documents.length>=0;i++){
+        user = userInfoSnapshot.documents[i].data()["userEmail"];
+        print("email-->"+user);
+        String image=path+userimg;
+        if(user == useremail ){
+          signIn();
+        }else{
+          singUp(image);
+        }
+      }
     });
-    String image=path+userimg;
-    if(user == useremail){
-      signIn();
-    }else{
-      singUp(image);
-    }
   }
 
   showData(String uniqID,String device) {
@@ -186,7 +191,7 @@ class _DashboardState extends State<Dashboard> {
                 children: [
                   Container(
                     child: EaelyCheck_IN_OUT(),
-                    height: 100,
+                    height: 120,
                     width: MediaQuery.of(context).size.width,
                   ),
                   SizedBox(
@@ -194,7 +199,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   Container(
                     child: leaveFeed(unique_id: uniqID),
-                    height: 160,
+                    height: 180,
                     width: MediaQuery.of(context).size.width,
                   ),
                   SizedBox(
@@ -228,7 +233,7 @@ class _DashboardState extends State<Dashboard> {
                   SizedBox(
                     height: 20,
                   ),
-                  Container(height: 160, child: newsFeeds()),
+                  Container(height: 180, child: newsFeeds()),
                 ],
               ),
             ),

@@ -3,7 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:AYT_Attendence/API/api.dart';
+import 'package:AYT_Attendence/Screens/chat2/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:http/http.dart' as http;
@@ -15,17 +20,18 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileThreePageState extends State<ProfileScreen> {
-  bool _load = false;
+
   String name;
-  String uniqId ;
-  String user_unique_id ;
-  String email ;
-  String phone ;
-  String dob ;
-  String joining_date ;
-  String department_id ;
-  String designation_id ;
-  String image ;
+  String uniqId;
+  String user_unique_id;
+  String email;
+  String phone;
+  String dob;
+  String joining_date;
+  String department_id;
+  String designation_id;
+  String image;
+  String image2;
   File uploadimage;
 
   String designation;
@@ -33,24 +39,38 @@ class _ProfileThreePageState extends State<ProfileScreen> {
 
   var statusCode;
   Timer timer;
+  ProgressDialog pr;
+  String detualtImage =
+      "https://miro.medium.com/max/300/1*PiHoomzwh9Plr9_GA26JcA.png";
 
-  getData()async{
-    SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
+  getData() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
+    DocumentReference doc_ref = Firestore.instance
+        .collection("users")
+        .document(email)
+        .collection("Dates")
+        .document();
+
+    DocumentSnapshot docSnap = await doc_ref.get();
+    var doc_id2 = docSnap.reference.documentID;
+    print("User Document ID" + doc_id2);
     setState(() {
-      name=sharedPreferences.getString("name");
-      uniqId=sharedPreferences.getString("unique_id");
-      user_unique_id=sharedPreferences.getString("user_unique_id");
-      email=sharedPreferences.getString("email");
-      phone=sharedPreferences.getString("phone");
-      dob=sharedPreferences.getString("dob");
-      joining_date=sharedPreferences.getString("joining_date");
-      department_id=sharedPreferences.getString("department_id");
-      designation_id=sharedPreferences.getString("designation_id");
-      image=sharedPreferences.getString("image");
-
+      name = sharedPreferences.getString("name");
+      uniqId = sharedPreferences.getString("unique_id");
+      user_unique_id = sharedPreferences.getString("user_unique_id");
+      email = sharedPreferences.getString("email");
+      phone = sharedPreferences.getString("phone");
+      dob = sharedPreferences.getString("dob");
+      joining_date = sharedPreferences.getString("joining_date");
+      department_id = sharedPreferences.getString("department_id");
+      designation_id = sharedPreferences.getString("designation_id");
+      image = sharedPreferences.getString("image");
+      showData(department_id, designation_id);
     });
   }
-  showData()async{
+
+  showData(String department_id, String designation_id) async {
     department_user_id(department_id);
     designation_user_id(designation_id);
   }
@@ -64,259 +84,334 @@ class _ProfileThreePageState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String path=All_API().baseurl_img+All_API().profile_img_path;
-    var duration=new Duration(seconds: 1);
-    Timer(duration, showData);
-    return SafeArea(child: Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue[1000],
-        title: Container(
-          margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 0),
-          child: Text(
-            'Profile ',
-            style: TextStyle(color: Colors.orange),
+    //============================================= loading dialoge
+    pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
+
+    //Optional
+    pr.style(
+      message: 'Please wait...',
+      borderRadius: 10.0,
+      backgroundColor: Colors.white,
+      progressWidget: CircularProgressIndicator(),
+      elevation: 10.0,
+      insetAnimCurve: Curves.easeInOut,
+      progressTextStyle: TextStyle(
+          color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+      messageTextStyle: TextStyle(
+          color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600),
+    );
+    String path = All_API().baseurl_img + All_API().profile_img_path;
+    // var duration = new Duration(seconds: 1);
+    //Timer(duration, showData);
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.blue[1000],
+          title: Container(
+            margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 0),
+            child: Text(
+              'Profile ',
+              style: TextStyle(color: Colors.orange),
+            ),
           ),
-        ),
-        /*leading: new IconButton(
+          /*leading: new IconButton(
           icon: new Icon(
             Icons.arrow_back_ios,
             color: Colors.orange,
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),*/
-      ),
-      backgroundColor: Colors.grey.shade300,
-      body: SingleChildScrollView(
-        child: Stack(
-          children: <Widget>[
-            SizedBox(
-              height: 250,
-              width: double.infinity,
-              child: Image.network(
-                image!=null?path+image:"assets/ayt.png",
-                fit: BoxFit.cover,
+        ),
+        backgroundColor: Colors.grey.shade300,
+        body: SingleChildScrollView(
+          child: Stack(
+            children: <Widget>[
+              SizedBox(
+                height: 250,
+                width: double.infinity,
+                child: Image.network(
+                  image != null ? path + image : detualtImage,
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-            Container(
-              margin: EdgeInsets.fromLTRB(16.0, 200.0, 16.0, 16.0),
-              child: Column(
-                children: <Widget>[
-                  Stack(
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.all(16.0),
-                        margin: EdgeInsets.only(top: 16.0),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(5.0)),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-
-                            Container(
-                              margin: EdgeInsets.only(left: 96.0),
-
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    name!=null?name:'Adiyogi',
-                                    style: Theme.of(context).textTheme.title,
-                                  ),
-
-                                  ListTile(
-                                    contentPadding: EdgeInsets.all(0),
-                                    title: Text(designation!=null?designation:'Designation'),
-                                    subtitle: Text(department!=null?department:'Department'),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 10.0),
-                            Center(child:RaisedButton(
-                              child: Text('UpLoad Image'),
-                              color: Colors.orange,
-                              textColor: Colors.white,
-                              elevation: 5,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(18.0),
-                                  side: BorderSide(color: Colors.blue[1000])
-                              ),
-                              padding: EdgeInsets.fromLTRB(100, 20, 100, 20),
-                              splashColor: Colors.blue[1000],
-                              onPressed: () async {
-                                //onpressed gets called when the button is tapped.
-                                var imagepicker = await ImagePicker.pickImage(source: ImageSource.gallery);
-                                if(imagepicker!=null){
-                                  setState(() {
-                                    print("profileUpload_imagepicker--> " + imagepicker.path);
-                                    uploadimage=imagepicker ;
-
-                                    profileUpload(uploadimage);
-                                    //
-                                  });
-                                }
-                              },
-                            ),),
-                            /*Row(
-                              children: <Widget>[
-                                GestureDetector(
-                                  child: Text("Upload Image"),
-                                  onTap: () async{
-
-                                  },
-                                )
-                              ],
-                            ),*/
-                          ],
-                        ),
-                      ),
-                      Container(
-                        height: 80,
-                        width: 80,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            image: DecorationImage(
-                                image: NetworkImage(image!=null?path+image:"assets/ayt.png",), fit: BoxFit.cover)),
-                        margin: EdgeInsets.only(left: 16.0),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20.0),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                    child: Column(
+              Container(
+                margin: EdgeInsets.fromLTRB(16.0, 200.0, 16.0, 16.0),
+                child: Column(
+                  children: <Widget>[
+                    Stack(
                       children: <Widget>[
-                        ListTile(
-                          title: Text("Employee information"),
+                        Container(
+                          padding: EdgeInsets.all(16.0),
+                          margin: EdgeInsets.only(top: 16.0),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(5.0)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                margin: EdgeInsets.only(left: 96.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      name != null ? name : 'Adiyogi',
+                                      style: Theme.of(context).textTheme.title,
+                                    ),
+                                    ListTile(
+                                      contentPadding: EdgeInsets.all(0),
+                                      title: Text(designation != null
+                                          ? designation
+                                          : 'Designation'),
+                                      subtitle: Text(department != null
+                                          ? department
+                                          : 'Department'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 10.0),
+                              Center(
+                                child: RaisedButton(
+                                  child: Text('UpLoad Image'),
+                                  color: Colors.orange,
+                                  textColor: Colors.white,
+                                  elevation: 5,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(18.0),
+                                      side:
+                                          BorderSide(color: Colors.blue[1000])),
+                                  padding:
+                                      EdgeInsets.fromLTRB(100, 20, 100, 20),
+                                  splashColor: Colors.blue[1000],
+                                  onPressed: () async {
+                                    //onpressed gets called when the button is tapped.
+                                    var imagepicker =
+                                        await ImagePicker.pickImage(
+                                            source: ImageSource.gallery);
+                                    if (imagepicker != null) {
+                                      setState(() {
+                                        print("profileUpload_imagepicker--> " +
+                                            imagepicker.path);
+                                        uploadimage = imagepicker;
+                                        startUploading(uploadimage);
+                                        // profileUpload(uploadimage);
+
+                                      });
+                                    }else{
+                                      messageAllert(' Please Select a profile photo ', ' Select Photo ');
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        Divider(),
-                        ListTile(
-                          title: Text("Email"),
-                          subtitle: Text(email!=null?email:''),
-                          leading: Icon(Icons.email),
-                        ),
-                        ListTile(
-                          title: Text("Phone"),
-                          subtitle: Text(phone!=null?phone:''),
-                          leading: Icon(Icons.phone),
-                        ),
-                        ListTile(
-                          title: Text("Employee Id"),
-                          subtitle: Text(user_unique_id!=null?user_unique_id:''),
-                          leading: Icon(Icons.person),
-                        ),
-                        ListTile(
-                          title: Text("Date of Birth"),
-                          subtitle: Text(dob!=null?dob:''),
-                          leading: Icon(Icons.date_range),
-                        ),
-                        ListTile(
-                          title: Text("Joined Date"),
-                          subtitle: Text(joining_date!=null?joining_date:''),
-                          leading: Icon(Icons.calendar_view_day),
+                        Container(
+                          height: 80,
+                          width: 80,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              image: DecorationImage(
+                                  image: NetworkImage(
+                                    image != null ? path + image : detualtImage,
+                                  ),
+                                  fit: BoxFit.cover)),
+                          margin: EdgeInsets.only(left: 16.0),
                         ),
                       ],
                     ),
-                  )
-                ],
+                    SizedBox(height: 20.0),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                      child: Column(
+                        children: <Widget>[
+                          ListTile(
+                            title: Text("Employee information"),
+                          ),
+                          Divider(),
+                          ListTile(
+                            title: Text("Email"),
+                            subtitle: Text(email != null ? email : ''),
+                            leading: Icon(Icons.email),
+                          ),
+                          ListTile(
+                            title: Text("Phone"),
+                            subtitle: Text(phone != null ? phone : ''),
+                            leading: Icon(Icons.phone),
+                          ),
+                          ListTile(
+                            title: Text("Employee Id"),
+                            subtitle: Text(
+                                user_unique_id != null ? user_unique_id : ''),
+                            leading: Icon(Icons.person),
+                          ),
+                          ListTile(
+                            title: Text("Date of Birth"),
+                            subtitle: Text(dob != null ? dob : ''),
+                            leading: Icon(Icons.date_range),
+                          ),
+                          ListTile(
+                            title: Text("Joined Date"),
+                            subtitle:
+                                Text(joining_date != null ? joining_date : ''),
+                            leading: Icon(Icons.calendar_view_day),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),);
+    );
   }
+
   void department_user_id(String departmentID) async {
-    var endpointUrl = All_API().baseurl+All_API().api_department + departmentID;
-    print("department URL--->"+endpointUrl);
+    var endpointUrl =
+        All_API().baseurl + All_API().api_department + departmentID;
+    print("department URL--->" + endpointUrl);
     Map<String, String> headers = {
       All_API().key: All_API().keyvalue,
     };
-    var response = await http.get(endpointUrl,headers: headers);
-    statusCode=response.statusCode;
-    if(statusCode==200){
+    var response = await http.get(endpointUrl, headers: headers);
+    statusCode = response.statusCode;
+    if (statusCode == 200) {
       setState(() {
         Map jasonData = jsonDecode(response.body);
-        department=jasonData['data']['name'];
-        print('Department : '+department);
-        print('Department Data : '+jasonData.toString());
+        department = jasonData['data']['name'];
+        print('Department : ' + department);
+        print('Department Data : ' + jasonData.toString());
       });
-
     }
   }
+
   void designation_user_id(String designationID) async {
-    var endpointUrl = All_API().baseurl+All_API().api_designation + designationID;
-    print("designation URL--->"+endpointUrl);
+    var endpointUrl =
+        All_API().baseurl + All_API().api_designation + designationID;
+    print("designation URL--->" + endpointUrl);
     Map<String, String> headers = {
       All_API().key: All_API().keyvalue,
     };
-    var response = await http.get(endpointUrl,headers:headers );
-    if(statusCode==200){
-
+    var response = await http.get(endpointUrl, headers: headers);
+    if (statusCode == 200) {
       setState(() {
         Map jasonData = jsonDecode(response.body);
-        designation=jasonData['data']['name'];
-        print('Designation : '+designation);
-        print('Designation Data : '+jasonData.toString());
+        designation = jasonData['data']['name'];
+        print('Designation : ' + designation);
+        print('Designation Data : ' + jasonData.toString());
       });
+    }
+  }
+  void _resetState() {
+    setState(() {
+      pr.hide();
+      image = null;
+    });
+  }
+  messageAllert(String msg, String ttl) {
+    Navigator.pop(context);
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return new CupertinoAlertDialog(
+            title: Text(ttl),
+            content: Text(msg),
+            actions: [
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                child: Column(
+                  children: <Widget>[
+                    Text('Okay'),
+                  ],
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
+  }
+  void startUploading(File uplimage) async {
+    print("_startUploading_image -------> " + uplimage.path);
+    if (uploadimage != null) {
+      final Map<String, dynamic> response = await profileUpload(uplimage);
 
+      //Check if any error occured
+      if (response == null) {
+        pr.hide();
+        messageAllert('Record save Successfully..', 'Success');
+      }
+    } else {
+      pr.hide();
+      messageAllert(' Please Select a profile photo ', ' Select Photo ');
     }
   }
 
-  void profileUpload(File uploadimage) async {
+  Future profileUpload(File uploadimage) async {
+    setState(() {
+      pr.show();
+    });
     //String uni_id="NODS5X5N5V2H2Z";
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    String url = All_API().baseurl +All_API().api_profile+uniqId;
-    print("profile image URL--->"+url);
+    String url = All_API().baseurl + All_API().api_profile + uniqId;
+    print("profile image URL--->" + url);
     String filename = uploadimage.path.split("/image_picker").last;
     Map<String, String> headers = {
       All_API().key: All_API().keyvalue,
     };
     var request = http.MultipartRequest('POST', Uri.parse(url));
-    request.files.add(await http.MultipartFile.fromPath('file', uploadimage.path));
+    // request.files.add(await http.MultipartFile.fromPath('file', uploadimage.path));
+    final file = await http.MultipartFile.fromPath('image[]', uploadimage.path);
+    request.files.add(file);
     request.headers.addAll(headers);
-    final response = await request.send();
-    final respStr = await response.stream.bytesToString();
-    loadingdialog();
-    if (response.statusCode == 200) {
-      setState(() {
-        _load=false;
-        Map jsonData=jsonDecode(respStr);
-        String path=jsonData['path'];
-        String imageSplit=path.split('/').last;
-        image=imageSplit.trim();
-        final snackBar = SnackBar(content: Text('Your Profile Successfully Updated',style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.green,);
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        print("Uploaded Image--> "+imageSplit);
-        print("Uploaded Image--> "+path);
-      });
 
-
+    try {
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      print("Expenses---> : " + response.body);
+      String mssg = responseData['msg'];
+      if (response.statusCode == 200) {
+        setState(() {
+          String path = responseData['path'];
+          String imageSplit = path.split('/').last;
+          image = imageSplit.trim();
+          setState(() {
+            String pathmain =
+                All_API().baseurl_img + All_API().profile_img_path;
+            sharedPreferences.setString("image", image);
+            Map<String, String> userDataMap = {
+              "userName": name,
+              "userEmail": email,
+              "userImage": pathmain + image,
+            };
+            DatabaseMethods2().updateUserInfo(userDataMap, email);
+          });
+          print("Uploaded Image--> " + imageSplit);
+          print("Uploaded Image--> " + path);
+        });
+        Fluttertoast.showToast(msg: mssg, gravity: ToastGravity.BOTTOM);
+        return null;
+      } else {
+        Fluttertoast.showToast(msg: mssg, gravity: ToastGravity.BOTTOM);
+        print("profileUpload_reasonPhrase--> " + response.reasonPhrase);
+      }
+      _resetState();
+      return responseData;
+    } catch (e) {
+      return (e);
     }
-    else {
-      setState(() {
-        final snackBar = SnackBar(content: Text('Your Profile Image Not Successfully Updated',style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.red,);
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        print("profileUpload_reasonPhrase--> "+response.reasonPhrase);
-      });
 
-    }
   }
 
-  void loadingdialog() {
 
-    _load=true;
-    if(_load==true){
-      CircularProgressIndicator();
-      final snackBar = SnackBar(content: Text('Uploading Image',style: TextStyle(fontWeight: FontWeight.bold),),backgroundColor: Colors.red,);
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-    }else{
-
-    }
-  }
 }

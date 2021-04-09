@@ -2,11 +2,13 @@ import 'dart:io';
 
 import 'package:AYT_Attendence/API/api.dart';
 import 'package:AYT_Attendence/Screens/Expenses/track_expenses.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final PermissionHandler permissionHandler = PermissionHandler();
@@ -21,6 +23,7 @@ class UpdateExpensesApplication extends StatefulWidget {
   String expenseValue;
   String description;
   String expenseName;
+
   UpdateExpensesApplication(
       {
         this.id,
@@ -47,6 +50,7 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
   var msg;
   var kmvalue;
   var ExpensesType;
+  ProgressDialog pr;
   TextEditingController _ExpPriceController = TextEditingController();
   TextEditingController _ExpMsgController2 = TextEditingController();
 
@@ -83,6 +87,9 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
   }
 
   Future uploadmultipleimage() async {
+    setState(() {
+      pr.show();
+    });
     var url = All_API().baseurl + All_API().api_update_expense;
     print("Employee Update URL--->"+url);
     print("Employee ID--->"+widget.employeeID);
@@ -92,6 +99,8 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
       'Content-Type': 'multipart/form-data'
     };
     var request = http.MultipartRequest('POST', Uri.parse(url));
+    // request.files.add(await http.MultipartFile.fromPath('image[]', image.path));
+    final file = await http.MultipartFile.fromPath('image[]', image.path);
     request.fields['id'] = widget.id;
     request.fields['employee_id'] = widget.employeeID;
     request.fields['expense_id'] = leaveID;
@@ -99,19 +108,40 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
     request.fields['value'] = kmvalue;
     request.fields['description'] = msg;
     request.fields['date'] = dateFrom;
-    request.files.add(await http.MultipartFile.fromPath('image[]', image.path));
+    request.files.add(file);
     request.headers.addAll(headers);
 
-    http.StreamedResponse response = await request.send();
-    final respStr = await response.stream.bytesToString();
-    print("Update Expenses ----> "+respStr);
 
-    if (response.statusCode == 200) {
-      print(await response.stream.bytesToString());
-      return null;
-    } else {
-      print(response.reasonPhrase);
+    try{
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      // http.StreamedResponse response = await request.send();
+      // var resopnss = await http.Response.fromStream(response);
+      // var jsonData = jsonDecode(response.body);
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      print("Update_Expenses---> : " + response.body);
+      String mssg = responseData['msg'];
+      if (response.statusCode == 200) {
+        print("if Expenses---> : Your Expenses Uploaded " + mssg);
+        return null;
+
+      } else {
+        print("else Expenses---> : Your Expenses Not Uploaded");
+        pr.hide();
+        messageAllert(mssg, 'Fail');
+        print(response.reasonPhrase);
+      }
+      _resetState();
+      return responseData;
+    }catch(e){
+      return(e);
     }
+    // if (response.statusCode == 200) {
+    //   print(await response.stream.bytesToString());
+    //   return null;
+    // } else {
+    //   print(response.reasonPhrase);
+    // }
   }
 
   ServiceStatus serviceStatus;
@@ -148,6 +178,21 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
   String _errorMessage;
   @override
   Widget build(BuildContext context) {
+    pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
+
+    //Optional
+    pr.style(
+      message: 'Please wait...',
+      borderRadius: 10.0,
+      backgroundColor: Colors.white,
+      progressWidget: CircularProgressIndicator(),
+      elevation: 10.0,
+      insetAnimCurve: Curves.easeInOut,
+      progressTextStyle: TextStyle(
+          color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+      messageTextStyle: TextStyle(
+          color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600),
+    );
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -347,7 +392,8 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
                                         ],
                                       ),
                                       //Image.file(image)
-                                      widget.image!=null?Image.network(widget.image,fit: BoxFit.fill,height: 100,width: 200,):'',
+                                      widget.image!=null?Image.network(widget.image,fit: BoxFit.fill,height: 100,width: 200,):NetworkImage(
+                                          'https://git.unilim.fr/assets/no_group_avatar-4a9d347a20d783caee8aaed4a37a65930cb8db965f61f3b72a2e954a0eaeb8ba.png'),
                                     ],
                                   ),
                                 ),
@@ -371,7 +417,9 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
                                           if(_ExpPriceController.text.isNotEmpty&&_ExpMsgController2.text.isNotEmpty&&dateFrom!=null&&selectedvalue!=null){
                                             msg = _ExpMsgController2.text;
                                             kmvalue = _ExpPriceController.text;
-                                            uploadmultipleimage();
+                                            startUploading();
+                                          }else{
+                                            messageAllert(' Please Fill All Detail ', ' Form Not Submited ');
                                           }
 
                                         })),
@@ -405,6 +453,60 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
     var imagePicker = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
       image = imagePicker;
+    });
+  }
+  void startUploading() async {
+    print("_startUploading -------> " + msg);
+    if (image != null  ) {
+      final Map<String, dynamic> response = await uploadmultipleimage();
+
+      //Check if any error occured
+      if (response == null) {
+        pr.hide();
+        messageAllert('Record save Successfully..', 'Success');
+      }
+    } else {
+      pr.hide();
+      messageAllert(' Please Select a profile photo ', ' Select Photo ');
+    }
+  }
+  messageAllert(String msg, String ttl) {
+    Navigator.pop(context);
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return new CupertinoAlertDialog(
+            title: Text(ttl),
+            content: Text(msg),
+            actions: [
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                child: Column(
+                  children: <Widget>[
+                    Text('Okay'),
+                  ],
+                ),
+                onPressed: () {
+                  setState(() {
+                    //You can also make changes to your state here.
+
+                  });
+                  Navigator.pop(context);
+
+                },
+              ),
+            ],
+          );
+        });
+  }
+  void _resetState() {
+    setState(() {
+      pr.hide();
+      image = null;
+      dateFrom = null;
+      selectedvalue = null;
+      msg = null;
+      kmvalue = null;
     });
   }
 }

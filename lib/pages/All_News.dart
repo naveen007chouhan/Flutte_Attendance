@@ -77,7 +77,6 @@ class newsFeedsState extends State<All_News> {
                                 )));
                       },
                       child: Container(
-                        height: 195,
                         child: Card(
                           elevation: 10,
                           child: Row(
