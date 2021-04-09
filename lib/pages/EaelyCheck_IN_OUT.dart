@@ -60,6 +60,7 @@ class leaveFeedState extends State<EaelyCheck_IN_OUT> {
     print(requestUrl);
     var response = await http.get(requestUrl, headers: headers);
     Map jasonData = jsonDecode(response.body);
+    print('EarlyCheckInOut : ' + jasonData.toString());
     if(response.statusCode==200){
       //latecheckIN = jasonData['data'][0]['counterRecord'][0]['early_checkout'];
       //earlycheckOUT = jasonData['data'][0]['counterRecord'][0]['total_early_checkout'];

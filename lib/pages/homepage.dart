@@ -27,39 +27,424 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
-
   FSBStatus drawerStatus;
+  String name;
+  String uniqId;
+  String userphn;
+  String userimg;
+  bool userIsLoggedIn;
+  String path = All_API().baseurl_img + All_API().profile_img_path;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getData();
+    // getLoggedInState();
+  }
+
+  getData() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      name = sharedPreferences.getString("name");
+      uniqId = sharedPreferences.getString("unique_id");
+      userphn = sharedPreferences.getString("phone");
+      userimg = sharedPreferences.getString("image");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    MediaQueryData mediaQuery = MediaQuery.of(context);
     return SafeArea(
       child: Scaffold(
-          appBar: AppBar(
-            title: Container(
-              margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 0),
-              child: Text(
-                'DASHBOARD', style: TextStyle(color: Colors.orange),),
+        appBar: AppBar(
+          title: Container(
+            margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 0),
+            child: Text(
+              'DASHBOARD',
+              style: TextStyle(color: Colors.orange),
             ),
-            backgroundColor: Colors.blue[1000],
-            toolbarHeight: 50,
-            leading: new IconButton(
+          ),
+          backgroundColor: Colors.blue[1000],
+          iconTheme: IconThemeData(color: Colors.orange),
+          /* leading: new IconButton(
               icon: new Icon(Icons.menu,size: 30,color: Colors.orange,),
               onPressed: () {
                 setState(() {
                   drawerStatus = drawerStatus == FSBStatus.FSB_OPEN ? FSBStatus.FSB_CLOSE : FSBStatus.FSB_OPEN;
                 });
               },
-            ),
-          ),
-        body: //FoldableSidebarBuilder(status: drawerStatus, drawer: CustomDrawer(), screenContents: Dashboard(),)
-        FoldableSidebarBuilder(
+            ),*/
+        ),
+        drawer: Container(
+            width: MediaQuery.of(context).size.width * 0.7,
+            child: Drawer(
+              child: ListView(
+                children: [
+                  Container(
+                    height: 200,
+                    child: DrawerHeader(
+                      decoration: BoxDecoration(color: Colors.blue[1000]),
+                      child: Container(
+                          child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 5,
+                          ),
+                          CircleAvatar(
+                            radius: 45.0,
+                            backgroundImage: userimg != null
+                                ? NetworkImage(
+                                    path + userimg,
+                                  )
+                                : Image.asset(
+                                    'assets/ayt.png',
+                                  ),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          name == null
+                              ? Text("ADIYOGI TECHNOSOFT")
+                              : Text("$name",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.orange)),
+                          userphn == null
+                              ? Text("**********")
+                              : Text("$userphn",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w300,
+                                      color: Colors.orange)),
+                        ],
+                      )),
+                    ),
+                  ),
+
+                  // UserAccountsDrawerHeader(
+                  //   decoration: BoxDecoration(
+                  //       color: Colors.blue[1000]
+                  //   ),
+                  //   currentAccountPicture: CircleAvatar(
+                  //     backgroundImage: userimg != null
+                  //         ? NetworkImage(path + userimg)
+                  //         : Image.asset('assets/ayt.png'),
+                  //   ),
+                  //   accountName: name == null
+                  //       ? Text("ADIYOGI TECHNOSOFT")
+                  //       : Text("$name",
+                  //       style: TextStyle(
+                  //           fontSize: 18,
+                  //           fontWeight: FontWeight.w600,
+                  //           color: Colors.orange)),
+                  //   accountEmail: userphn == null
+                  //       ? Text("**********")
+                  //       : Text("$userphn",
+                  //       style: TextStyle(
+                  //           fontSize: 12,
+                  //           fontWeight: FontWeight.w400,
+                  //           color: Colors.orange)),
+                  // ),
+                  ListTile(
+                    onTap: () {
+                      print("Tapped Profile");
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ProfileScreen()));
+                      //closeDrewer();
+                    },
+                    leading: Icon(
+                      Icons.person,
+                      color: Colors.orange,
+                    ),
+                    title: Text(
+                      "Your Profile",
+                      style: TextStyle(color: Colors.black54),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      debugPrint("Tapped Notifications");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NotificationScreen(),
+                        ),
+                      );
+                    },
+                    leading: Icon(
+                      Icons.notifications,
+                      color: Colors.orange,
+                    ),
+                    title: Text(
+                      "Notifications",
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      print("Tapped Chat");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => userIsLoggedIn != null
+                              ? ChatRoom()
+                              : BottomNavBar(),
+                        ),
+                      );
+                    },
+                    leading: Icon(
+                      Icons.chat,
+                      color: Colors.orange,
+                    ),
+                    title: Text(
+                      "Chat",
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ),
+                  Divider(
+                    height: 1,
+                    color: Colors.deepOrange,
+                  ),
+                  ListTile(
+                    onTap: () {
+                      debugPrint("Tapped General");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GeneralLeave(),
+                        ),
+                      );
+                    },
+                    leading: Icon(
+                      Icons.article,
+                      color: Colors.orange,
+                    ),
+                    title: Text(
+                      "General Leave",
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      debugPrint("Tapped Track Attendance");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TrackAttendance(),
+                        ),
+                      );
+                    },
+                    leading: Icon(
+                      Icons.attribution_outlined,
+                      color: Colors.orange,
+                    ),
+                    title: Text(
+                      "Track Attendance",
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      debugPrint("Tapped Track Leave");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MyTrackLeave(),
+                        ),
+                      );
+                    },
+                    leading: Icon(
+                      Icons.article,
+                      color: Colors.orange,
+                    ),
+                    title: Text(
+                      "Track Leave",
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      debugPrint("Tapped Early Checkout");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EarlyCheckOutRequest(),
+                        ),
+                      );
+                    },
+                    leading: Icon(
+                      Icons.outbond_outlined,
+                      color: Colors.orange,
+                    ),
+                    title: Text(
+                      "Early Checkout ",
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ),
+                  Divider(
+                    height: 1,
+                    color: Colors.deepOrange,
+                  ),
+                  ListTile(
+                    onTap: () {
+                      debugPrint("Tapped Expenses");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MyTrackExpenses(),
+                        ),
+                      );
+                    },
+                    leading: Icon(
+                      Icons.explicit,
+                      color: Colors.orange,
+                    ),
+                    title: Text(
+                      "View Expenses",
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ),
+                  Divider(
+                    height: 1,
+                    color: Colors.deepOrange,
+                  ),
+                  ListTile(
+                    onTap: () {
+                      debugPrint("Tapped Salary");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SalaryList(),
+                        ),
+                      );
+                    },
+                    leading: Icon(
+                      Icons.money,
+                      color: Colors.orange,
+                    ),
+                    title: Text(
+                      "Salary Report",
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ),
+                  Divider(
+                    height: 1,
+                    color: Colors.deepOrange,
+                  ),
+                  ListTile(
+                    onTap: () {
+                      debugPrint("Tapped Contact");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ContactPage(),
+                        ),
+                      );
+                    },
+                    leading: Icon(
+                      Icons.call,
+                      color: Colors.orange,
+                    ),
+                    title: Text(
+                      "Contact Us",
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      debugPrint("Tapped About");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AboutPage(),
+                        ),
+                      );
+                    },
+                    leading: Icon(
+                      Icons.assignment_late,
+                      color: Colors.orange,
+                    ),
+                    title: Text(
+                      "About Us",
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      debugPrint("Tapped Terms");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TremsCondition(),
+                        ),
+                      );
+                    },
+                    leading: Icon(
+                      Icons.assignment,
+                      color: Colors.orange,
+                    ),
+                    title: Text(
+                      "Terms & Condition",
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      debugPrint("Tapped Salary");
+                      //Navigator.push(context, MaterialPageRoute(builder: (context) => ContactPage(),),);
+                    },
+                    leading: Icon(
+                      Icons.privacy_tip,
+                      color: Colors.orange,
+                    ),
+                    title: Text(
+                      "Privacy Policy",
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ),
+                  Divider(
+                    height: 1,
+                    color: Colors.deepOrange,
+                  ),
+                  ListTile(
+                    onTap: () async {
+                      debugPrint("Tapped Log Out");
+                      if (uniqId.toString().isNotEmpty) {
+                        SharedPreferences sharedPreferences =
+                            await SharedPreferences.getInstance();
+                        sharedPreferences.setBool("loggedIn", false);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MyLogin2(),
+                          ),
+                        );
+                      }
+                      //Navigator.push(context, MaterialPageRoute(builder: (context) => ContactPage(),),);
+                    },
+                    leading: Icon(Icons.exit_to_app, color: Colors.orange),
+                    title: Text(
+                      "Log Out",
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ),
+                ],
+              ),
+            )),
+        body: FoldableSidebarBuilder(
           drawerBackgroundColor: Colors.orange,
-          status:drawerStatus,
-          drawer: CustomDrawer(closeDrawer: (){
-            setState(() {
-              drawerStatus = FSBStatus.FSB_CLOSE;
-            });
-          },),
+          status: drawerStatus,
+          drawer: CustomDrawer(
+            closeDrawer: () {
+              setState(() {
+                drawerStatus = FSBStatus.FSB_CLOSE;
+              });
+            },
+          ),
           screenContents: Dashboard(),
         ),
       ),
@@ -68,7 +453,6 @@ class _HomePageState extends State<HomePage> {
 }
 
 class CustomDrawer extends StatefulWidget {
-
   final Function closeDrawer;
 
   const CustomDrawer({Key key, this.closeDrawer}) : super(key: key);
@@ -88,27 +472,30 @@ class _CustomDrawerState extends State<CustomDrawer> {
     // TODO: implement initState
     super.initState();
     getData();
-    getLoggedInState();
+    // getLoggedInState();
   }
-  getData()async{
-    SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
+
+  getData() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
-      name=sharedPreferences.getString("name");
-      uniqId=sharedPreferences.getString("unique_id");
-      userphn=sharedPreferences.getString("phone");
-      userimg=sharedPreferences.getString("image");
+      name = sharedPreferences.getString("name");
+      uniqId = sharedPreferences.getString("unique_id");
+      userphn = sharedPreferences.getString("phone");
+      userimg = sharedPreferences.getString("image");
     });
   }
+
   getLoggedInState() async {
-    await HelperFunctions2.getUserLoggedInSharedPreference().then((value){
+    await HelperFunctions2.getUserLoggedInSharedPreference().then((value) {
       setState(() {
-        userIsLoggedIn  = value;
+        userIsLoggedIn = value;
       });
     });
   }
+
   @override
   Widget build(BuildContext context) {
-    String path=All_API().baseurl_img+All_API().profile_img_path;
+    String path = All_API().baseurl_img + All_API().profile_img_path;
     MediaQueryData mediaQuery = MediaQuery.of(context);
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
@@ -129,14 +516,19 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     ),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
-                      child: userimg!=null?Image.network(
-                        path+userimg,
-                        width: 110,
-                        height: 110,
-                        fit: BoxFit.cover,
-                      ):Image.asset('assets/ayt.png',width: 110,
-                        height: 110,
-                        fit: BoxFit.cover,),
+                      child: userimg != null
+                          ? Image.network(
+                              path + userimg,
+                              width: 110,
+                              height: 110,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.asset(
+                              'assets/ayt.png',
+                              width: 110,
+                              height: 110,
+                              fit: BoxFit.cover,
+                            ),
                       /*child: Image.asset(
                         "assets/ayt.png",
                         width: 110.0,
@@ -153,42 +545,79 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     SizedBox(
                       height: 20,
                     ),
-                    name == null ? Text("ADIYOGI TECHNOSOFT") :
-                    Text("$name",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.blue[1000])),
-                    userphn == null ? Text("**********"):
-                    Text("$userphn",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.blue[1000])),
+                    name == null
+                        ? Text("ADIYOGI TECHNOSOFT")
+                        : Text("$name",
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue[1000])),
+                    userphn == null
+                        ? Text("**********")
+                        : Text("$userphn",
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue[1000])),
                     SizedBox(
                       height: 10,
                     ),
                   ],
                 )),
             ListTile(
-              onTap: (){
+              onTap: () {
                 print("Tapped Profile");
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ProfileScreen()));
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => ProfileScreen()));
                 //closeDrewer();
               },
-              leading: Icon(Icons.person,color: Colors.orange,),
-              title: Text("Your Profile",style: TextStyle(color: Colors.orange),),
+              leading: Icon(
+                Icons.person,
+                color: Colors.orange,
+              ),
+              title: Text(
+                "Your Profile",
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
             ListTile(
               onTap: () {
                 debugPrint("Tapped Notifications");
-                Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationScreen(),),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NotificationScreen(),
+                  ),
+                );
               },
-              leading: Icon(Icons.notifications,color: Colors.orange,),
-              title: Text("Notifications",style: TextStyle(color: Colors.orange),),
+              leading: Icon(
+                Icons.notifications,
+                color: Colors.orange,
+              ),
+              title: Text(
+                "Notifications",
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
             ListTile(
-              onTap: (){
+              onTap: () {
                 print("Tapped Chat");
-                Navigator.push(context,
-                  MaterialPageRoute(builder: (context) =>
-                  userIsLoggedIn != null ? ChatRoom()
-                      : BottomNavBar(),),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        userIsLoggedIn != null ? ChatRoom() : BottomNavBar(),
+                  ),
+                );
               },
-              leading: Icon(Icons.chat,color: Colors.orange,),
-              title: Text("Chat",style: TextStyle(color: Colors.orange),),
+              leading: Icon(
+                Icons.chat,
+                color: Colors.orange,
+              ),
+              title: Text(
+                "Chat",
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
             Divider(
               height: 1,
@@ -197,34 +626,78 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ListTile(
               onTap: () {
                 debugPrint("Tapped General");
-                Navigator.push(context, MaterialPageRoute(builder: (context) => GeneralLeave(),),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GeneralLeave(),
+                  ),
+                );
               },
-              leading: Icon(Icons.article,color: Colors.orange,),
-              title: Text("General Leave",style: TextStyle(color: Colors.orange),),
+              leading: Icon(
+                Icons.article,
+                color: Colors.orange,
+              ),
+              title: Text(
+                "General Leave",
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
             ListTile(
               onTap: () {
                 debugPrint("Tapped Track Attendance");
-                Navigator.push(context, MaterialPageRoute(builder: (context) => TrackAttendance(),),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TrackAttendance(),
+                  ),
+                );
               },
-              leading: Icon(Icons.attribution_outlined,color: Colors.orange,),
-              title: Text("Track Attendance",style: TextStyle(color: Colors.orange),),
+              leading: Icon(
+                Icons.attribution_outlined,
+                color: Colors.orange,
+              ),
+              title: Text(
+                "Track Attendance",
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
             ListTile(
               onTap: () {
                 debugPrint("Tapped Track Leave");
-                Navigator.push(context, MaterialPageRoute(builder: (context) => MyTrackLeave(),),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MyTrackLeave(),
+                  ),
+                );
               },
-              leading: Icon(Icons.article,color: Colors.orange,),
-              title: Text("Track Leave",style: TextStyle(color: Colors.orange),),
+              leading: Icon(
+                Icons.article,
+                color: Colors.orange,
+              ),
+              title: Text(
+                "Track Leave",
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
             ListTile(
               onTap: () {
                 debugPrint("Tapped Early Checkout");
-                Navigator.push(context, MaterialPageRoute(builder: (context) => EarlyCheckOutRequest(),),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EarlyCheckOutRequest(),
+                  ),
+                );
               },
-              leading: Icon(Icons.outbond_outlined,color: Colors.orange,),
-              title: Text("Early Checkout ",style: TextStyle(color: Colors.orange),),
+              leading: Icon(
+                Icons.outbond_outlined,
+                color: Colors.orange,
+              ),
+              title: Text(
+                "Early Checkout ",
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
             Divider(
               height: 1,
@@ -233,10 +706,21 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ListTile(
               onTap: () {
                 debugPrint("Tapped Expenses");
-                Navigator.push(context, MaterialPageRoute(builder: (context) => MyTrackExpenses(),),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MyTrackExpenses(),
+                  ),
+                );
               },
-              leading: Icon(Icons.explicit,color: Colors.orange,),
-              title: Text("View Expenses",style: TextStyle(color: Colors.orange),),
+              leading: Icon(
+                Icons.explicit,
+                color: Colors.orange,
+              ),
+              title: Text(
+                "View Expenses",
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
             Divider(
               height: 1,
@@ -245,10 +729,21 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ListTile(
               onTap: () {
                 debugPrint("Tapped Salary");
-                Navigator.push(context, MaterialPageRoute(builder: (context) => SalaryList(),),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SalaryList(),
+                  ),
+                );
               },
-              leading: Icon(Icons.money,color: Colors.orange,),
-              title: Text("Salary Report",style: TextStyle(color: Colors.orange),),
+              leading: Icon(
+                Icons.money,
+                color: Colors.orange,
+              ),
+              title: Text(
+                "Salary Report",
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
             Divider(
               height: 1,
@@ -257,34 +752,73 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ListTile(
               onTap: () {
                 debugPrint("Tapped Contact");
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ContactPage(),),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ContactPage(),
+                  ),
+                );
               },
-              leading: Icon(Icons.call,color: Colors.orange,),
-              title: Text("Contact Us",style: TextStyle(color: Colors.orange),),
+              leading: Icon(
+                Icons.call,
+                color: Colors.orange,
+              ),
+              title: Text(
+                "Contact Us",
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
             ListTile(
               onTap: () {
                 debugPrint("Tapped About");
-                Navigator.push(context, MaterialPageRoute(builder: (context) => AboutPage(),),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AboutPage(),
+                  ),
+                );
               },
-              leading: Icon(Icons.assignment_late,color: Colors.orange,),
-              title: Text("About Us",style: TextStyle(color: Colors.orange),),
+              leading: Icon(
+                Icons.assignment_late,
+                color: Colors.orange,
+              ),
+              title: Text(
+                "About Us",
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
             ListTile(
               onTap: () {
                 debugPrint("Tapped Terms");
-                Navigator.push(context, MaterialPageRoute(builder: (context) => TremsCondition(),),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TremsCondition(),
+                  ),
+                );
               },
-              leading: Icon(Icons.assignment,color: Colors.orange,),
-              title: Text("Terms & Condition",style: TextStyle(color: Colors.orange),),
+              leading: Icon(
+                Icons.assignment,
+                color: Colors.orange,
+              ),
+              title: Text(
+                "Terms & Condition",
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
             ListTile(
               onTap: () {
                 debugPrint("Tapped Salary");
                 //Navigator.push(context, MaterialPageRoute(builder: (context) => ContactPage(),),);
               },
-              leading: Icon(Icons.privacy_tip,color: Colors.orange,),
-              title: Text("Privacy Policy",style: TextStyle(color: Colors.orange),),
+              leading: Icon(
+                Icons.privacy_tip,
+                color: Colors.orange,
+              ),
+              title: Text(
+                "Privacy Policy",
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
             Divider(
               height: 1,
@@ -293,15 +827,24 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ListTile(
               onTap: () async {
                 debugPrint("Tapped Log Out");
-                if(uniqId.toString().isNotEmpty){
-                  SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
+                if (uniqId.toString().isNotEmpty) {
+                  SharedPreferences sharedPreferences =
+                      await SharedPreferences.getInstance();
                   sharedPreferences.setBool("loggedIn", false);
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyLogin2(),),);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MyLogin2(),
+                    ),
+                  );
                 }
                 //Navigator.push(context, MaterialPageRoute(builder: (context) => ContactPage(),),);
               },
-              leading: Icon(Icons.exit_to_app,color: Colors.orange),
-              title: Text("Log Out",style: TextStyle(color: Colors.orange),),
+              leading: Icon(Icons.exit_to_app, color: Colors.orange),
+              title: Text(
+                "Log Out",
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
           ],
         ),
@@ -313,5 +856,3 @@ class _CustomDrawerState extends State<CustomDrawer> {
     print('refreshing stocks...');
   }
 }
-
-
