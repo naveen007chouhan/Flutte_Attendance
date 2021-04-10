@@ -34,7 +34,8 @@ class _HomePageState extends State<HomePage> {
   String userimg;
   bool userIsLoggedIn;
   String path = All_API().baseurl_img + All_API().profile_img_path;
-
+  String detualtImage =
+      "https://miro.medium.com/max/300/1*PiHoomzwh9Plr9_GA26JcA.png";
   @override
   void initState() {
     // TODO: implement initState
@@ -99,9 +100,7 @@ class _HomePageState extends State<HomePage> {
                                 ? NetworkImage(
                                     path + userimg,
                                   )
-                                : Image.asset(
-                                    'assets/ayt.png',
-                                  ),
+                                : NetworkImage(detualtImage),
                           ),
                           SizedBox(
                             height: 20,
@@ -124,31 +123,6 @@ class _HomePageState extends State<HomePage> {
                       )),
                     ),
                   ),
-
-                  // UserAccountsDrawerHeader(
-                  //   decoration: BoxDecoration(
-                  //       color: Colors.blue[1000]
-                  //   ),
-                  //   currentAccountPicture: CircleAvatar(
-                  //     backgroundImage: userimg != null
-                  //         ? NetworkImage(path + userimg)
-                  //         : Image.asset('assets/ayt.png'),
-                  //   ),
-                  //   accountName: name == null
-                  //       ? Text("ADIYOGI TECHNOSOFT")
-                  //       : Text("$name",
-                  //       style: TextStyle(
-                  //           fontSize: 18,
-                  //           fontWeight: FontWeight.w600,
-                  //           color: Colors.orange)),
-                  //   accountEmail: userphn == null
-                  //       ? Text("**********")
-                  //       : Text("$userphn",
-                  //       style: TextStyle(
-                  //           fontSize: 12,
-                  //           fontWeight: FontWeight.w400,
-                  //           color: Colors.orange)),
-                  // ),
                   ListTile(
                     onTap: () {
                       print("Tapped Profile");
@@ -158,11 +132,14 @@ class _HomePageState extends State<HomePage> {
                     },
                     leading: Icon(
                       Icons.person,
-                      color: Colors.orange,
+                      color: Colors.blue[1000],
                     ),
                     title: Text(
                       "Your Profile",
-                      style: TextStyle(color: Colors.black54),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w200,
+                          color: Colors.blue[1000]),
                     ),
                   ),
                   ListTile(
@@ -177,11 +154,14 @@ class _HomePageState extends State<HomePage> {
                     },
                     leading: Icon(
                       Icons.notifications,
-                      color: Colors.orange,
+                      color: Colors.blue[1000],
                     ),
                     title: Text(
                       "Notifications",
-                      style: TextStyle(color: Colors.orange),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w200,
+                          color: Colors.blue[1000]),
                     ),
                   ),
                   ListTile(
@@ -198,11 +178,14 @@ class _HomePageState extends State<HomePage> {
                     },
                     leading: Icon(
                       Icons.chat,
-                      color: Colors.orange,
+                      color: Colors.blue[1000],
                     ),
                     title: Text(
                       "Chat",
-                      style: TextStyle(color: Colors.orange),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w200,
+                          color: Colors.blue[1000]),
                     ),
                   ),
                   Divider(
@@ -221,11 +204,14 @@ class _HomePageState extends State<HomePage> {
                     },
                     leading: Icon(
                       Icons.article,
-                      color: Colors.orange,
+                      color: Colors.blue[1000],
                     ),
                     title: Text(
                       "General Leave",
-                      style: TextStyle(color: Colors.orange),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w200,
+                          color: Colors.blue[1000]),
                     ),
                   ),
                   ListTile(
@@ -240,11 +226,14 @@ class _HomePageState extends State<HomePage> {
                     },
                     leading: Icon(
                       Icons.attribution_outlined,
-                      color: Colors.orange,
+                      color: Colors.blue[1000],
                     ),
                     title: Text(
                       "Track Attendance",
-                      style: TextStyle(color: Colors.orange),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w200,
+                          color: Colors.blue[1000]),
                     ),
                   ),
                   ListTile(
@@ -259,11 +248,14 @@ class _HomePageState extends State<HomePage> {
                     },
                     leading: Icon(
                       Icons.article,
-                      color: Colors.orange,
+                      color: Colors.blue[1000],
                     ),
                     title: Text(
                       "Track Leave",
-                      style: TextStyle(color: Colors.orange),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w200,
+                          color: Colors.blue[1000]),
                     ),
                   ),
                   ListTile(
@@ -278,11 +270,14 @@ class _HomePageState extends State<HomePage> {
                     },
                     leading: Icon(
                       Icons.outbond_outlined,
-                      color: Colors.orange,
+                      color: Colors.blue[1000],
                     ),
                     title: Text(
                       "Early Checkout ",
-                      style: TextStyle(color: Colors.orange),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w200,
+                          color: Colors.blue[1000]),
                     ),
                   ),
                   Divider(
@@ -301,11 +296,14 @@ class _HomePageState extends State<HomePage> {
                     },
                     leading: Icon(
                       Icons.explicit,
-                      color: Colors.orange,
+                      color: Colors.blue[1000],
                     ),
                     title: Text(
                       "View Expenses",
-                      style: TextStyle(color: Colors.orange),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w200,
+                          color: Colors.blue[1000]),
                     ),
                   ),
                   Divider(
@@ -324,11 +322,14 @@ class _HomePageState extends State<HomePage> {
                     },
                     leading: Icon(
                       Icons.money,
-                      color: Colors.orange,
+                      color: Colors.blue[1000],
                     ),
                     title: Text(
                       "Salary Report",
-                      style: TextStyle(color: Colors.orange),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w200,
+                          color: Colors.blue[1000]),
                     ),
                   ),
                   Divider(
@@ -347,11 +348,14 @@ class _HomePageState extends State<HomePage> {
                     },
                     leading: Icon(
                       Icons.call,
-                      color: Colors.orange,
+                      color: Colors.blue[1000],
                     ),
                     title: Text(
                       "Contact Us",
-                      style: TextStyle(color: Colors.orange),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w200,
+                          color: Colors.blue[1000]),
                     ),
                   ),
                   ListTile(
@@ -366,11 +370,14 @@ class _HomePageState extends State<HomePage> {
                     },
                     leading: Icon(
                       Icons.assignment_late,
-                      color: Colors.orange,
+                      color: Colors.blue[1000],
                     ),
                     title: Text(
                       "About Us",
-                      style: TextStyle(color: Colors.orange),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w200,
+                          color: Colors.blue[1000]),
                     ),
                   ),
                   ListTile(
@@ -385,11 +392,14 @@ class _HomePageState extends State<HomePage> {
                     },
                     leading: Icon(
                       Icons.assignment,
-                      color: Colors.orange,
+                      color: Colors.blue[1000],
                     ),
                     title: Text(
                       "Terms & Condition",
-                      style: TextStyle(color: Colors.orange),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w200,
+                          color: Colors.blue[1000]),
                     ),
                   ),
                   ListTile(
@@ -399,11 +409,14 @@ class _HomePageState extends State<HomePage> {
                     },
                     leading: Icon(
                       Icons.privacy_tip,
-                      color: Colors.orange,
+                      color: Colors.blue[1000],
                     ),
                     title: Text(
                       "Privacy Policy",
-                      style: TextStyle(color: Colors.orange),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w200,
+                          color: Colors.blue[1000]),
                     ),
                   ),
                   Divider(

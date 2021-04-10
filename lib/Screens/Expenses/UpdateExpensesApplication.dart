@@ -1,18 +1,15 @@
 import 'dart:io';
-
 import 'package:AYT_Attendence/API/api.dart';
 import 'package:AYT_Attendence/Screens/Expenses/track_expenses.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 final PermissionHandler permissionHandler = PermissionHandler();
-
 class UpdateExpensesApplication extends StatefulWidget {
   String id;
   String date;
@@ -23,7 +20,6 @@ class UpdateExpensesApplication extends StatefulWidget {
   String expenseValue;
   String description;
   String expenseName;
-
   UpdateExpensesApplication(
       {
         this.id,
@@ -39,38 +35,23 @@ class UpdateExpensesApplication extends StatefulWidget {
   @override
   LeaveApplicationWidgetState createState() => LeaveApplicationWidgetState();
 }
-
 class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
     with SingleTickerProviderStateMixin {
-
+  final _formKey = GlobalKey<FormState>();
   File image;
   var leaveID;
   bool isChecked = false;
   var labels;
-  var msg;
-  var kmvalue;
+  var expensesPrice;
+  var expensesMSG;
   var ExpensesType;
-  ProgressDialog pr;
-  TextEditingController _ExpPriceController = TextEditingController();
-  TextEditingController _ExpMsgController2 = TextEditingController();
-
+  var expensesImage;
+  TextEditingController _textEditingControllerPrice ;
+  TextEditingController _textEditingControllerMSg ;
+  TextEditingController _textEditingControllerDATE ;
   DateTime currentDate = DateTime.now();
-  var dateFrom;
-  Future<void> _selectDateFrom(BuildContext context) async {
-    final DateTime pickedDate = await showDatePicker(
-        context: context,
-        initialDate: currentDate,
-        firstDate: DateTime(2021),
-        lastDate: DateTime(2100));
-    if (pickedDate != null && pickedDate != currentDate)
-      setState(() {
-        currentDate = pickedDate;
-        var str = currentDate.toString();
-        var Strdate = str.split(" ");
-        dateFrom = Strdate[0].trim();
-      });
-  }
-
+  var expensesDate;
+  ProgressDialog pr;
   @override
   void initState() {
     super.initState();
@@ -78,74 +59,74 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
     var str=widget.date;
     var Strdate=str.split(" ");
     var date = Strdate[0].trim();
-    dateFrom = date;
+    expensesDate = date;
     leaveID = widget.expenseID;
-    msg = widget.description;
-    kmvalue = widget.expenseValue;
+    expensesMSG = widget.description;
+    expensesPrice = widget.expenseValue;
     ExpensesType = widget.expenseType;
     selectedvalue = widget.expenseName;
+    expensesImage = widget.image;
+    print("expensesImage-->"+expensesImage);
+    networkImageToBase64(expensesImage);
+    _textEditingControllerPrice = TextEditingController(text: expensesPrice);
+    _textEditingControllerMSg = TextEditingController(text: expensesMSG);
+    _textEditingControllerDATE = TextEditingController(text: expensesDate);
   }
-
-  Future uploadmultipleimage() async {
+  void networkImageToBase64(String imageUrl) async {
+    http.Response response = await http.get(imageUrl);
+    //final bytes = response?.bodyBytes;
+    var _base64 = base64Encode(response.bodyBytes);
+    final decodedBytes = base64Decode(_base64);
+    final Future<Directory> path = getApplicationDocumentsDirectory();
+    final localPath = await path;
+    print("local Path"+localPath.toString());
+    var splitPath = localPath.path.split("'");
+    print("local Path"+splitPath.first);
+    //File('$localPath/$pngBytes');
+    var fileImage="decodedBezkoder.png";
+    image = File(splitPath.first+"/"+fileImage);
+    image.writeAsBytesSync(decodedBytes);
+    print("File Type Image--->"+image.toString());
+    //return (bytes != null ? base64Encode(bytes) : null);
+  }
+  Future uploadmultipleimage(BuildContext context) async {
     setState(() {
       pr.show();
     });
     var url = All_API().baseurl + All_API().api_update_expense;
     print("Employee Update URL--->"+url);
     print("Employee ID--->"+widget.employeeID);
-
     Map<String, String> headers = {
       All_API().key: All_API().keyvalue,
       'Content-Type': 'multipart/form-data'
     };
     var request = http.MultipartRequest('POST', Uri.parse(url));
-    // request.files.add(await http.MultipartFile.fromPath('image[]', image.path));
-    final file = await http.MultipartFile.fromPath('image[]', image.path);
     request.fields['id'] = widget.id;
     request.fields['employee_id'] = widget.employeeID;
     request.fields['expense_id'] = leaveID;
     request.fields['type'] = ExpensesType;
-    request.fields['value'] = kmvalue;
-    request.fields['description'] = msg;
-    request.fields['date'] = dateFrom;
-    request.files.add(file);
+    request.fields['value'] = expensesPrice;
+    request.fields['description'] = expensesMSG;
+    request.fields['date'] = expensesDate;
+    request.files.add(await http.MultipartFile.fromPath('image[]', image.path));
     request.headers.addAll(headers);
-
-
-    try{
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-      // http.StreamedResponse response = await request.send();
-      // var resopnss = await http.Response.fromStream(response);
-      // var jsonData = jsonDecode(response.body);
-      final Map<String, dynamic> responseData = json.decode(response.body);
-      print("Update_Expenses---> : " + response.body);
-      String mssg = responseData['msg'];
-      if (response.statusCode == 200) {
-        print("if Expenses---> : Your Expenses Uploaded " + mssg);
-        return null;
-
-      } else {
-        print("else Expenses---> : Your Expenses Not Uploaded");
-        pr.hide();
-        messageAllert(mssg, 'Fail');
-        print(response.reasonPhrase);
-      }
-      _resetState();
-      return responseData;
-    }catch(e){
-      return(e);
+    http.StreamedResponse response = await request.send();
+    final respStr = await response.stream.bytesToString();
+    print("Update Expenses ----> "+respStr);
+    if (response.statusCode == 200) {
+      pr.hide();
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text(
+          'Expenses Updated Successfully!!')));
+    } else {
+      pr.hide();
+      print(response.reasonPhrase);
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text(
+          'Expenses Updated UnSuccessful!!')));
     }
-    // if (response.statusCode == 200) {
-    //   print(await response.stream.bytesToString());
-    //   return null;
-    // } else {
-    //   print(response.reasonPhrase);
-    // }
   }
-
   ServiceStatus serviceStatus;
-
   String selectedvalue;
   List<dynamic> ExpensesTypeList = List();
   Future ExpensesStudent() async {
@@ -158,7 +139,6 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
     String queryString = Uri(queryParameters: queryParameter).query;
     var requestUrl = endpointUrl + '?' + queryString;
     print("requestUrl--> " + requestUrl);
-
     var response = await http.get(requestUrl, headers: {
       All_API().key.toUpperCase(): All_API().keyvalue.toUpperCase(),
     });
@@ -171,15 +151,12 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
     } else {}
     print("ExpensesTypeList-->" + ExpensesTypeList.toString());
   }
-
   int leaveIndex = -1;
   List<Widget> list = null;
-
   String _errorMessage;
   @override
   Widget build(BuildContext context) {
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
-
     //Optional
     pr.style(
       message: 'Please wait...',
@@ -226,212 +203,213 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
                       vertical: 16.0, horizontal: 16.0),
                   child: Builder(
                       builder: (context) => Form(
-                        //key: _formKey,
-                          child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.stretch,
-                              children: [
-                                Row(
-
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text('Choose Date',
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold)),
-                                    ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Container(
-                            padding: const EdgeInsets.fromLTRB(
-                                0, 5, 0, 20),
-                            child: RaisedButton(
-                              color: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                  BorderRadius.circular(5.0)),
-                              elevation: 4.0,
-                              onPressed: () {
-                                _selectDateFrom(context);
-                              },
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: 50.0,
-                                child: Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
-                                  children: <Widget>[
-                                    Row(
-                                      children: <Widget>[
-                                        Container(
-                                          child: Row(
-                                            children: <Widget>[
-                                              Text(
-                                                dateFrom != null
-                                                    ? dateFrom
-                                                    : "",
-                                                style: TextStyle(
-                                                  color:
-                                                  Colors.blue,
-                                                  fontSize: 16.0,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                            )),
-                      ),
-
-                                  ],
-                                ),
-                                Container(
-                                  padding:
-                                  const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                                  child: Text('Type of Expenses',style: TextStyle(
+                        key: _formKey,
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              alignment: Alignment.topLeft,
+                              child: Text('Type of Expenses',
+                                  style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold)),
-                                ),
-                                Column(
-                                  children: <Widget>[
-                                    DropdownButton(
-                                      isExpanded: true,
-                                      hint: Text(selectedvalue!=null?selectedvalue:"Select Expenses",style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold)),
-                                      value: selectedvalue,
-                                      items: ExpensesTypeList.map((explist) {
-                                        return DropdownMenuItem(
-                                          value: explist['name'],
-                                          child: Text(explist['name']),
-                                          onTap: () {
-                                            ExpensesType = explist['type'];
-                                            leaveID = explist['id'];
-                                            print(ExpensesType);
-                                          },
-                                        );
-                                      }).toList(),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          selectedvalue = value;
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                                TextField(
-                                  autofocus: false,
-                                  controller: _ExpPriceController,
-                                  decoration: new InputDecoration(
-                                    hintText: kmvalue!=null?kmvalue:'Enter Value',
-                                    labelText: "Expenses Price: "+ExpensesType!=null?ExpensesType:'Expenses Price',
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide:
-                                      BorderSide(color: Colors.black54),
-                                    ),
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide:
-                                      BorderSide(color: Colors.black54),
-                                    ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+                              child: DropdownButton(
+                                isExpanded: true,
+                                hint: Text("Select Expenses",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold)),
+                                value: selectedvalue,
+                                items: ExpensesTypeList.map((explist) {
+                                  return DropdownMenuItem(
+                                    value: explist['name'],
+                                    child: Text(explist['name']),
+                                    onTap: () {
+                                      ExpensesType = explist['type'];
+                                      leaveID = explist['id'];
+                                      print(ExpensesType);
+                                    },
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedvalue = value;
+                                  });
+                                },
+                              ),
+                            ),
+                            new ListTile(
+                              leading: const Icon(Icons.attach_money_outlined),
+                              title: new TextFormField(
+                                keyboardType: TextInputType.number,
+                                controller: _textEditingControllerPrice,
+                                //initialValue: expensesPrice==null?'No Value':expensesPrice,
+                                decoration: new InputDecoration(
+                                  //: expensesPrice==null?'No Value':expensesPrice,
+                                  hintText: "Expenses Price",
+                                  labelText: ExpensesType.toString().toUpperCase()
+                                      !=null?ExpensesType.toString().toUpperCase():"Price",
+                                  labelStyle: TextStyle(color: Colors.black,),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(0),
                                   ),
                                 ),
-                                TextField(
-                                  autofocus: false,
-                                  textInputAction: TextInputAction.newline,
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: 5,
-                                  controller: _ExpMsgController2,
-                                  decoration: new InputDecoration(
-                                    hintText: msg!=null?msg:'Enter Description',
-                                    labelText: msg != null
-                                        ? msg
-                                        :"Description",
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide:
-                                      BorderSide(color: Colors.black54),
-                                    ),
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide:
-                                      BorderSide(color: Colors.black54),
-                                    ),
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Please fill Expenses Price';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 10,),
+                            new ListTile(
+                              leading: const Icon(Icons.article),
+                              title: new TextFormField(
+                                keyboardType: TextInputType.text,
+                                controller: _textEditingControllerMSg,
+                                decoration: new InputDecoration(
+                                  hintText: "Expenses Description",
+                                  labelText: "Description",
+                                  labelStyle: TextStyle(color: Colors.black,),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(0),
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                Container(
-                                  height: 200,
-                                  child: Column(
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Please fill Expenses Description';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 10,),
+                            new ListTile(
+                                leading: const Icon(Icons.calendar_today),
+                                title: TextFormField(
+                                  controller: _textEditingControllerDATE,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(0),
+                                    ),
+                                    labelText: "Expenses Date",
+                                    hintText: "Date",),
+                                  onTap: () async{
+                                    DateTime date = DateTime(1900);
+                                    FocusScope.of(context).requestFocus(new FocusNode());
+                                    date = await showDatePicker(
+                                        context: context,
+                                        initialDate:DateTime.now(),
+                                        firstDate:DateTime(1900),
+                                        lastDate: DateTime(2100));
+                                    currentDate = date;
+                                    var str = currentDate.toString();
+                                    var Strdate = str.split(" ");
+                                    var dateFrom = Strdate[0].trim();
+                                    _textEditingControllerDATE.text = dateFrom;
+                                  },
+                                  validator: ((value){
+                                    if(value.isEmpty){
+                                      return 'Please fill Expenses Date';
+                                    }
+                                    return null;
+                                  }),
+                                )
+                            ),
+                            Container(
+                              margin: EdgeInsets.symmetric(vertical: 20,horizontal: 20),
+                              child: Column(
+                                children: [
+                                  Column(
                                     children: [
-                                      Row(
-                                        children: [
-                                          RaisedButton(
-                                              child: Padding(
-                                                padding:
-                                                const EdgeInsets.symmetric(
-                                                    vertical: 10.0,
-                                                    horizontal: 16.0),
-                                                child: Text(
-                                                  "Choose Images",
-                                                  style: TextStyle(
-                                                      color: Colors.orange),
-                                                ),
-                                              ),
-                                              color: Colors.blue[1000],
-                                              hoverColor: Colors.blue[1000],
-                                              hoverElevation: 40.0,
-                                              onPressed: () {
-                                                pickImages();
-                                              })
-                                        ],
+                                      RaisedButton(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+                                            child: Text(
+                                              "Choose Images",
+                                              style: TextStyle(
+                                                  color: Colors.orange),
+                                            ),
+                                          ),
+                                          color: Colors.blue[1000],
+                                          hoverColor: Colors.blue[1000],
+                                          hoverElevation: 40.0,
+                                          onPressed: () {
+                                            pickImages();
+                                          }),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 20),
+                                        child: CircleAvatar(
+                                          backgroundImage: image == null
+                                              ? NetworkImage(
+                                              expensesImage)
+                                              : FileImage(File(image.path)),
+                                          radius: 50.0,
+                                        ),
                                       ),
-                                      //Image.file(image)
-                                      widget.image!=null?Image.network(widget.image,fit: BoxFit.fill,height: 100,width: 200,):NetworkImage(
-                                          'https://git.unilim.fr/assets/no_group_avatar-4a9d347a20d783caee8aaed4a37a65930cb8db965f61f3b72a2e954a0eaeb8ba.png'),
                                     ],
                                   ),
-                                ),
-                                Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 20.0, horizontal: 16.0),
-                                    child: RaisedButton(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 20.0, horizontal: 16.0),
-                                          child: Text(
-                                            "APPLY EXPENSES",
-                                            style: TextStyle(
-                                                color: Colors.white),
-                                          ),
-                                        ),
-                                        color: Colors.orange,
-                                        hoverColor: Colors.blue[1000],
-                                        hoverElevation: 40.0,
-                                        onPressed: () {
-                                          if(_ExpPriceController.text.isNotEmpty&&_ExpMsgController2.text.isNotEmpty&&dateFrom!=null&&selectedvalue!=null){
-                                            msg = _ExpMsgController2.text;
-                                            kmvalue = _ExpPriceController.text;
-                                            startUploading();
-                                          }else{
-                                            messageAllert(' Please Fill All Detail ', ' Form Not Submited ');
-                                          }
-
-                                        })),
-                              ])))))),
+                                ],
+                              ),
+                            ),
+                            Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 20.0, horizontal: 20),
+                                child: RaisedButton(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 20.0, horizontal: 35),
+                                      child: Text(
+                                        "APPLY EXPENSES",
+                                        style:
+                                        TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                    color: Colors.orange,
+                                    hoverColor: Colors.blue[1000],
+                                    hoverElevation: 40.0,
+                                    onPressed: () {
+                                      //uploadmultipleimage();
+                                      expensesDate = _textEditingControllerDATE.text;
+                                      expensesPrice = _textEditingControllerPrice.text;
+                                      expensesMSG = _textEditingControllerMSg.text;
+                                      print("MSG-->"+expensesMSG);
+                                      print("Price-->"+expensesPrice);
+                                      print("Date--->"+expensesDate);
+                                      /*print("Expenses--->"+selectedvalue);
+                                          print("Type--->"+ExpensesType);*/
+                                      print("Image--->"+image.toString());
+                                      if (_formKey.currentState.validate()) {
+                                        // If the form is valid, display a Snackbar.
+                                        if(selectedvalue!=null ){
+                                          uploadmultipleimage(context);
+                                          // Scaffold.of(context)
+                                          //     .showSnackBar(SnackBar(content: Text('Data is in processing.')));
+                                        }else{
+                                          Scaffold.of(context)
+                                              .showSnackBar(SnackBar(content: Text(
+                                              'Select Type Of Expenses')));
+                                          // messageAllert("Select Type Of Expenses", "Expenses Type");
+                                        }
+                                        // Scaffold.of(context)
+                                        //     .showSnackBar(SnackBar(content: Text('Data is in processing.')));
+                                      }
+                                    })
+                            ),
+                          ],
+                        ),
+                      )
+                  )
+              )
+          )
+      ),
     );
   }
-
-
-
   Future<void> pickImages() async {
     /*List<Asset> resultList = List<Asset>();
-
     try {
       resultList = await MultiImagePicker.pickImages(
         maxImages: 300,
@@ -444,7 +422,6 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
     } on Exception catch (e) {
       print(e);
     }
-
     setState(() {
       imagesList = resultList;
       //print("Selected Images---> " + imagesList.join(All_API().baseurl_img));
@@ -455,58 +432,5 @@ class LeaveApplicationWidgetState extends State<UpdateExpensesApplication>
       image = imagePicker;
     });
   }
-  void startUploading() async {
-    print("_startUploading -------> " + msg);
-    if (image != null  ) {
-      final Map<String, dynamic> response = await uploadmultipleimage();
-
-      //Check if any error occured
-      if (response == null) {
-        pr.hide();
-        messageAllert('Record save Successfully..', 'Success');
-      }
-    } else {
-      pr.hide();
-      messageAllert(' Please Select a profile photo ', ' Select Photo ');
-    }
-  }
-  messageAllert(String msg, String ttl) {
-    Navigator.pop(context);
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return new CupertinoAlertDialog(
-            title: Text(ttl),
-            content: Text(msg),
-            actions: [
-              CupertinoDialogAction(
-                isDefaultAction: true,
-                child: Column(
-                  children: <Widget>[
-                    Text('Okay'),
-                  ],
-                ),
-                onPressed: () {
-                  setState(() {
-                    //You can also make changes to your state here.
-
-                  });
-                  Navigator.pop(context);
-
-                },
-              ),
-            ],
-          );
-        });
-  }
-  void _resetState() {
-    setState(() {
-      pr.hide();
-      image = null;
-      dateFrom = null;
-      selectedvalue = null;
-      msg = null;
-      kmvalue = null;
-    });
-  }
 }
+

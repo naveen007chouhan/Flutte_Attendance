@@ -20,7 +20,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileThreePageState extends State<ProfileScreen> {
-
   String name;
   String uniqId;
   String user_unique_id;
@@ -194,12 +193,13 @@ class _ProfileThreePageState extends State<ProfileScreen> {
                                         print("profileUpload_imagepicker--> " +
                                             imagepicker.path);
                                         uploadimage = imagepicker;
-                                        startUploading(uploadimage);
-                                        // profileUpload(uploadimage);
-
+                                        //startUploading(uploadimage);
+                                        profileUpload(uploadimage, context);
                                       });
-                                    }else{
-                                      messageAllert(' Please Select a profile photo ', ' Select Photo ');
+                                    } else {
+                                      Scaffold.of(context)
+                                          .showSnackBar(SnackBar(content: Text('Please Select Profile Image !!')));
+
                                     }
                                   },
                                 ),
@@ -309,53 +309,12 @@ class _ProfileThreePageState extends State<ProfileScreen> {
       });
     }
   }
-  void _resetState() {
-    setState(() {
-      pr.hide();
-      image = null;
-    });
-  }
-  messageAllert(String msg, String ttl) {
-    Navigator.pop(context);
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return new CupertinoAlertDialog(
-            title: Text(ttl),
-            content: Text(msg),
-            actions: [
-              CupertinoDialogAction(
-                isDefaultAction: true,
-                child: Column(
-                  children: <Widget>[
-                    Text('Okay'),
-                  ],
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
-        });
-  }
-  void startUploading(File uplimage) async {
-    print("_startUploading_image -------> " + uplimage.path);
-    if (uploadimage != null) {
-      final Map<String, dynamic> response = await profileUpload(uplimage);
 
-      //Check if any error occured
-      if (response == null) {
-        pr.hide();
-        messageAllert('Record save Successfully..', 'Success');
-      }
-    } else {
-      pr.hide();
-      messageAllert(' Please Select a profile photo ', ' Select Photo ');
-    }
-  }
 
-  Future profileUpload(File uploadimage) async {
+
+
+
+  Future profileUpload(File uploadimage, BuildContext context) async {
     setState(() {
       pr.show();
     });
@@ -370,7 +329,8 @@ class _ProfileThreePageState extends State<ProfileScreen> {
     };
     var request = http.MultipartRequest('POST', Uri.parse(url));
     // request.files.add(await http.MultipartFile.fromPath('file', uploadimage.path));
-    final file = await http.MultipartFile.fromPath('image[]', uploadimage.path);
+    final file = await http.MultipartFile.fromPath('file', uploadimage.path);
+    print("file---> : " + file.toString());
     request.files.add(file);
     request.headers.addAll(headers);
 
@@ -398,20 +358,18 @@ class _ProfileThreePageState extends State<ProfileScreen> {
           });
           print("Uploaded Image--> " + imageSplit);
           print("Uploaded Image--> " + path);
+          pr.hide();
+          Scaffold.of(context).showSnackBar(
+              SnackBar(content: Text('Profile Updated Successfully!!')));
         });
-        Fluttertoast.showToast(msg: mssg, gravity: ToastGravity.BOTTOM);
-        return null;
       } else {
-        Fluttertoast.showToast(msg: mssg, gravity: ToastGravity.BOTTOM);
-        print("profileUpload_reasonPhrase--> " + response.reasonPhrase);
+        pr.hide();
+        Scaffold.of(context)
+            .showSnackBar(SnackBar(content: Text('Profile Not Updated !!')));
       }
-      _resetState();
-      return responseData;
+
     } catch (e) {
       return (e);
     }
-
   }
-
-
 }

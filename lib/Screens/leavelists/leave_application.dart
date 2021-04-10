@@ -1,35 +1,28 @@
 import 'dart:convert';
-
 import 'package:AYT_Attendence/API/api.dart';
 import 'package:AYT_Attendence/Screens/Expenses/expenses_application.dart';
 import 'package:AYT_Attendence/Screens/leavelists/model/TrackLeaveModel.dart';
 import 'package:AYT_Attendence/Screens/leavelists/track_leave.dart';
 import 'package:AYT_Attendence/model/LeaveModel.dart';
 import 'package:AYT_Attendence/pages/dashboard.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_buttons/grouped_buttons.dart';
 import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
 class LeaveApplication extends StatefulWidget {
   @override
   LeaveApplicationWidgetState createState() => LeaveApplicationWidgetState();
 }
-
 class LeaveApplicationWidgetState extends State<LeaveApplication>
     with SingleTickerProviderStateMixin {
-
-  var half="Half Day";
-  bool halfLeave=false;
-
+  String dayLeave=null;
+  var dayLeaveID;
+  List<dynamic> ExpensesTypeList = List();
+  List DayTypeList=[{'id':'1','name':'half day'},{'id':'0','name':'no selected'}];
   var leaveID;
   String selectedvalue;
-  // ignore: deprecated_member_use
-  List<dynamic> ExpensesTypeList = List();
-
+  final _formKey = GlobalKey<FormState>();
   String name;
   String date;
   String uniqID;
@@ -42,13 +35,11 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
   String action_check;
   FocusNode focusNode = new FocusNode();
   String checkINmsg;
-  ProgressDialog pr;
   @override
   void initState() {
     // TODO: implement initState
     getData();
     super.initState();
-
   }
   getData()async{
     SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
@@ -65,45 +56,15 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
       loadStudent(uniqID);
     });
   }
-
-  TextEditingController _textEditingController = TextEditingController();
+  TextEditingController _textEditingControllerMSG = TextEditingController();
+  TextEditingController _textEditingControllerFromDate = TextEditingController();
+  TextEditingController _textEditingControllerToDate = TextEditingController();
   var msg;
-
   DateTime currentDate = DateTime.now();
   var dateFrom;
   var dateTo;
-  Future<void> _selectDateFrom(BuildContext context) async {
-    final DateTime pickedDate = await showDatePicker(
-        context: context,
-        initialDate: currentDate,
-        firstDate: DateTime(2021),
-        lastDate: DateTime(2100));
-    if (pickedDate != null && pickedDate != currentDate)
-      setState(() {
-        currentDate = pickedDate;
-        var str=currentDate.toString();
-        var Strdate=str.split(" ");
-        dateFrom = Strdate[0].trim();
-
-      });
-  }
-  Future<void> _selectDateTO(BuildContext context) async {
-    final DateTime pickedDate = await showDatePicker(
-        context: context,
-        initialDate: currentDate,
-        firstDate: DateTime(2021),
-        lastDate: DateTime(2100));
-    if (pickedDate != null && pickedDate != currentDate)
-      setState(() {
-        currentDate = pickedDate;
-        var str=currentDate.toString();
-        var Strdate=str.split(" ");
-        dateTo = Strdate[0].trim();
-
-      });
-  }
-
-  Future  sendLeave() async {
+  ProgressDialog pr;
+  void sendLeave(BuildContext context) async {
     setState(() {
       pr.show();
     });
@@ -112,7 +73,7 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
     String body =jsonEncode({
       "employee_id": uniqID,
       "leave_type_id": leaveID,
-      "from_date":dateFrom ,"to_date": dateTo,
+      "from_date":dateFrom ,"to_date": dateTo==null?dateFrom:dateTo,
       "reason": msg,"half_day": "0"});
     print("leave_body--> " + body);
     Map<String, String> headers = {
@@ -120,25 +81,26 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
     };
     final http.Response response = await http.post(url,body:body,headers: headers);
     Map<String,dynamic> jasonData = jsonDecode(response.body);
-    print("Expenses---> : " + response.body);
-    String mssg = jasonData['msg'];
-    try{
-      if (response.statusCode == 200) {
-        print("if Leave Application---> : Your Leave Uploaded "+ mssg);
-        messageAllert(mssg, 'Success');
-        return null;
-      } else {
-        print("else Leave Application---> : Your Leave Not Uploaded");
-        pr.hide();
-        messageAllert(mssg, 'Fail');
-        print(response.reasonPhrase);
-      }
-      _resetState();
-      return jasonData;
-    }catch(e){
-      return(e);
+    String bodydetial = response.body;
+    String statusCode = response.statusCode.toString();
+    print("bodyss--> " + bodydetial.toString()+"  ///  "+statusCode);
+    checkINmsg=jasonData["msg"];
+    if (response.statusCode == 200) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(
+            'Leave Request Successfully!!'),
+        backgroundColor: Colors.green,
+      )
+      );
+      pr.hide();
+    } else {
+      Scaffold.of(context).showSnackBar(SnackBar(content:
+      Text(
+          'Leave Request UnSuccessful'),
+        backgroundColor: Colors.red,
+      ));
+      pr.hide();
     }
-
   }
   Future loadStudent(String uniqID) async {
     //var endpointUrl ="http://adiyogitechnosoft.com/attendance_dev/api/leave/NODS5X5N5V2H2Z";
@@ -156,14 +118,9 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
     } else {}
     print("ExpensesTypeList-->" + ExpensesTypeList.toString());
   }
-  int leaveIndex = -1;
-  List<Widget> list = null;
-
   @override
   Widget build(BuildContext context) {
-    //============================================= loading dialoge
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
-
     //Optional
     pr.style(
       message: 'Please wait...',
@@ -179,22 +136,8 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
     );
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          textTheme: TextTheme(
-              body1: TextStyle(
-                  color: Colors.black87,
-                  fontFamily: "poppins-medium",
-                  fontSize: 15,
-                  letterSpacing: 0.5,
-                  fontWeight: FontWeight.w400),
-              button: TextStyle(
-                  color: Colors.black87,
-                  fontFamily: "poppins-medium",
-                  fontSize: 18,
-                  letterSpacing: 2,
-                  fontWeight: FontWeight.w900))),
       home: Scaffold(
-          // resizeToAvoidBottomPadding: true,
+        // resizeToAvoidBottomPadding: true,
           resizeToAvoidBottomInset: true,
           appBar: AppBar(
             title: Text('Leave Application',style: TextStyle(color: Colors.orange)),
@@ -210,205 +153,239 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
                       vertical: 16.0, horizontal: 16.0),
                   child: Builder(
                       builder: (context) => Form(
-                        //key: _formKey,
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceAround,
-                                  children: <Widget>[
-                                    Text('From',style: TextStyle(
-                                        fontSize: 16,
+                        key: _formKey,
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              alignment: Alignment.topLeft,
+                              child: Text('Day Leave',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+                              child: DropdownButton(
+                                isExpanded: true,
+                                hint: Text("Select Leave day",
+                                    style: TextStyle(
+                                        fontSize: 14,
                                         fontWeight: FontWeight.bold)),
-                                    Container(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            0, 5, 0, 20),
-                                        child: RaisedButton(
-                                          color: Colors.white,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                              BorderRadius.circular(5.0)),
-                                          elevation: 4.0,
-                                          onPressed: () {
-                                            _selectDateFrom(context);
-                                          },
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            height: 50.0,
-                                            child: Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
-                                              children: <Widget>[
-                                                Row(
-                                                  children: <Widget>[
-                                                    Container(
-                                                      child: Row(
-                                                        children: <Widget>[
-                                                          Text(
-                                                            dateFrom!=null?dateFrom:"Start Date",
-                                                            style: TextStyle(
-                                                              color: Colors.blue,
-                                                              fontSize: 16.0,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        )
-                                    ),
-                                    Text('To',style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold)),
-                                    Container(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            0, 5, 0, 20),
-                                        child: RaisedButton(
-                                          color: Colors.white,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                              BorderRadius.circular(5.0)),
-                                          elevation: 4.0,
-                                          onPressed: () {
-                                            _selectDateTO(context);
-                                          },
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            height: 50.0,
-                                            child: Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
-                                              children: <Widget>[
-                                                Row(
-                                                  children: <Widget>[
-                                                    Container(
-                                                      child: Row(
-                                                        children: <Widget>[
-                                                          Text(
-                                                            dateTo!=null?dateTo:"End Date",
-                                                            style: TextStyle(
-                                                                color: Colors.blue,
-                                                                fontSize: 16.0),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        )),
-                                  ],
-                                ),
-                                CheckboxGroup(
-                                  labels: <String>[
-                                    half,
-                                  ],
-                                  //checked: _checked,
-                                  activeColor: Colors.red,
-                                  onChange: (bool isChecked, String label,
-                                      int index) {
-                                    print(
-                                        "isChecked: $isChecked   label: $label  index: $index");
-                                    leaveIndex = index;
-                                    halfLeave=isChecked;
-                                  },
-                                  onSelected: (List selected) => setState(() {
-                                    //isSelected = true;
-                                    if (selected.length > 1) {
-                                      selected.removeAt(0);
-                                      print(
-                                          'selected length  ${selected.length}');
-                                    } else {
-                                      print("only one");
+                                value: dayLeave,
+                                items: DayTypeList.map((explist) {
+                                  return DropdownMenuItem(
+                                    value: explist['name'],
+                                    child: Text(explist['name']),
+                                    onTap: (){
+                                      dayLeaveID = explist['id'];
+                                      print("leavess-->"+explist['id']);
+                                    },
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    dayLeave = value;
+                                    if(dayLeaveID==0){
+                                      dayLeave = null;
                                     }
-                                    //_checked = selected;
-                                  }),
-                                ),
-                                Container(
-                                  padding:
-                                  const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                                  child: Text('Type of leave',style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold)),
-                                ),
-                                Column(
-                                  children: <Widget>[
-                                    DropdownButton(
-                                      isExpanded: true,
-                                      hint: Text("Select Expenses",style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold)),
-                                      value: selectedvalue,
-                                      items: ExpensesTypeList.map((explist) {
-                                        return DropdownMenuItem(
-                                          value: explist['leave_type'],
-                                          child: Text(explist['leave_type']),
-                                          onTap: (){
-                                            leaveID=explist['leave_id'];
-                                            print("leavess-->"+leaveID.toString());
-                                          },
-                                        );
-                                      }).toList(),
-                                      onChanged:(value) {
-                                        setState(() {
-                                          selectedvalue=value;
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                                TextField(
-                                  autofocus: false,
-                                  controller: _textEditingController,
-                                  decoration: new InputDecoration(
-                                    labelText:
-                                    "Reason",
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide:
-                                      BorderSide(color: Colors.black54),
-                                    ),
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide:
-                                      BorderSide(color: Colors.black54),
-                                    ),
+                                  });
+                                },
+                              ),
+                            ),
+                            Container(
+                              alignment: Alignment.topLeft,
+                              child: Text('Type of Leave',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+                              child: DropdownButton(
+                                isExpanded: true,
+                                hint: Text("Select Leave",style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold)),
+                                value: selectedvalue,
+                                items: ExpensesTypeList.map((explist) {
+                                  return DropdownMenuItem(
+                                    value: explist['leave_type'],
+                                    child: Text(explist['leave_type']),
+                                    onTap: (){
+                                      leaveID=explist['leave_id'];
+                                      print("leavess-->"+leaveID.toString());
+                                    },
+                                  );
+                                }).toList(),
+                                onChanged:(value) {
+                                  setState(() {
+                                    selectedvalue=value;
+                                  });
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 10,),
+                            new ListTile(
+                              leading: const Icon(Icons.article),
+                              title: new TextFormField(
+                                keyboardType: TextInputType.text,
+                                controller: _textEditingControllerMSG,
+                                decoration: new InputDecoration(
+                                  hintText: "Expenses Description",
+                                  labelText: "Description",
+                                  labelStyle: TextStyle(color: Colors.black,),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(0),
                                   ),
                                 ),
-
-                                Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16.0, horizontal: 16.0),
-                                    child: RaisedButton(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 20.0, horizontal: 16.0),
-                                          child: Text("APPLY LEAVE",style: TextStyle(color: Colors.white),),
-                                        ),
-                                        color: Colors.orange,
-                                        hoverColor: Colors.blue[1000],
-                                        hoverElevation: 40.0,
-                                        onPressed: () {
-                                          if(_textEditingController.text.isNotEmpty&&dateFrom!=null&&dateTo!=null&&selectedvalue!=null){
-                                            msg=_textEditingController.text;
-                                            startUploading();
-                                          }else{
-                                            messageAllert(' Please Fill All Detail ', ' Form Not Submited ');
-                                          }
-                                          //msg=_textEditingController.text;
-                                          //sendLeave();
-                                          _showDialog(context);
-                                        }
-                                    )
-                                ),
-                              ])
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Please fill Expenses Description';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 10,),
+                            new ListTile(
+                                leading: const Icon(Icons.calendar_today),
+                                title: TextFormField(
+                                  controller: _textEditingControllerFromDate,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(0),
+                                    ),
+                                    labelText: "From Date",
+                                    hintText: "Date",),
+                                  onTap: () async{
+                                    DateTime date = DateTime(1900);
+                                    FocusScope.of(context).requestFocus(new FocusNode());
+                                    date = await showDatePicker(
+                                        context: context,
+                                        initialDate:DateTime.now(),
+                                        firstDate:DateTime(1900),
+                                        lastDate: DateTime(2100));
+                                    currentDate = date;
+                                    var str = currentDate.toString();
+                                    var Strdate = str.split(" ");
+                                    var dateFrom1 = Strdate[0].trim();
+                                    dateFrom =_textEditingControllerFromDate.text = dateFrom1;
+                                  },
+                                  validator: ((value){
+                                    if(value.isEmpty){
+                                      return 'Please fill Expenses Date';
+                                    }
+                                    return null;
+                                  }),
+                                )
+                            ),
+                            SizedBox(height: 10,),
+                            dayLeave == 'no selected'?Visibility(
+                              visible: true,
+                              child: new ListTile(
+                                  leading: const Icon(Icons.calendar_today),
+                                  title: TextFormField(
+                                    controller: _textEditingControllerToDate,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(0),
+                                      ),
+                                      labelText: "To Date",
+                                      hintText: "Date",),
+                                    onTap: () async{
+                                      DateTime date = DateTime(1900);
+                                      FocusScope.of(context).requestFocus(new FocusNode());
+                                      date = await showDatePicker(
+                                          context: context,
+                                          initialDate:DateTime.now(),
+                                          firstDate:DateTime(1900),
+                                          lastDate: DateTime(2100));
+                                      currentDate = date;
+                                      var str = currentDate.toString();
+                                      var Strdate = str.split(" ");
+                                      var dateFrom = Strdate[0].trim();
+                                      dateTo = _textEditingControllerToDate.text = dateFrom;
+                                    },
+                                    validator: ((value){
+                                      if(value.isEmpty){
+                                        return 'Please fill Expenses Date';
+                                      }
+                                      return null;
+                                    }),
+                                  )
+                              ),
+                            )
+                                :Visibility(
+                              visible: false,
+                              child: new ListTile(
+                                  leading: const Icon(Icons.calendar_today),
+                                  title: TextFormField(
+                                    controller: _textEditingControllerToDate,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(0),
+                                      ),
+                                      labelText: "To Date",
+                                      hintText: "Date",),
+                                    onTap: () async{
+                                      DateTime date = DateTime(1900);
+                                      FocusScope.of(context).requestFocus(new FocusNode());
+                                      date = await showDatePicker(
+                                          context: context,
+                                          initialDate:DateTime.now(),
+                                          firstDate:DateTime(1900),
+                                          lastDate: DateTime(2100));
+                                      currentDate = date;
+                                      var str = currentDate.toString();
+                                      var Strdate = str.split(" ");
+                                      var dateFrom = Strdate[0].trim();
+                                      dateTo = _textEditingControllerToDate.text = dateFrom;
+                                    },
+                                    validator: ((value){
+                                      if(value.isEmpty){
+                                        return 'Please fill Expenses Date';
+                                      }
+                                      return null;
+                                    }),
+                                  )
+                              ),
+                            ),
+                            Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 20.0, horizontal: 20),
+                                child: RaisedButton(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 20.0, horizontal: 80),
+                                      child: Text(
+                                        "APPLY LEAVE",
+                                        style:
+                                        TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                    color: Colors.orange,
+                                    hoverColor: Colors.blue[1000],
+                                    hoverElevation: 40.0,
+                                    onPressed: () {
+                                      msg = _textEditingControllerMSG.text;
+                                      if (_formKey.currentState.validate() && selectedvalue!=null) {
+                                        // If the form is valid, display a Snackbar.
+                                        sendLeave(context);
+                                      }else{
+                                        Scaffold.of(context)
+                                            .showSnackBar(SnackBar(content: Text(
+                                            'Please Fill All Fields!')));
+                                        // messageAllert("Select Type Of Expenses", "Expenses Type");
+                                      }
+                                      // Scaffold.of(context)
+                                      //     .showSnackBar(SnackBar(content: Text('Data is in processing.')));
+                                    }
+                                )
+                            ),
+                          ],
+                        ),
                       )
                   )
               )
@@ -416,7 +393,6 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
       ),
     );
   }
-
   void _showDialog(context) {
     // flutter defined function
     showDialog(
@@ -430,7 +406,7 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
             children: <Widget>[
               Text("From Date $dateFrom"),
               Text("To Date $dateTo"),
-              Text("Half $half"),
+              Text("Half $dayLeave"),
               Text("MSG $msg"),
             ],
           ),
@@ -439,7 +415,6 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-
                 Navigator.of(context).pop();
               },
             ),
@@ -448,65 +423,5 @@ class LeaveApplicationWidgetState extends State<LeaveApplication>
       },
     );
   }
-  void startUploading() async {
-    print("_startUploading -------> " + msg);
-
-      final Map<String, dynamic> response = await sendLeave();
-
-      //Check if any error occured
-      if (response == null) {
-        pr.hide();
-        messageAllert('Record save Successfully..', 'Success');
-      }
-
-  }
-  messageAllert(String msg, String ttl) {
-    Navigator.pop(context);
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return new CupertinoAlertDialog(
-            title: Text(ttl),
-            content: Text(msg),
-            actions: [
-              CupertinoDialogAction(
-                isDefaultAction: true,
-                child: Column(
-                  children: <Widget>[
-                    Text('Okay'),
-                  ],
-                ),
-                onPressed: () {
-
-                  Navigator.pop(context);
-
-                },
-              ),
-            ],
-          );
-        });
-  }
-  void _resetState() {
-    setState(() {
-      pr.hide();
-      dateFrom = null;
-      dateTo = null;
-      selectedvalue = null;
-      msg = null;
-
-    });
-  }
-  // void _showToast(BuildContext context,String msg) {
-  //   final scaffold = Scaffold.of(context);
-  //   scaffold.showSnackBar(
-  //     SnackBar(
-  //       backgroundColor: Colors.green,
-  //       content: Text("Have a nice Day"),
-  //       behavior:SnackBarBehavior.floating ,
-  //       action: SnackBarAction(
-  //           label: msg!=null?msg:"",
-  //           textColor: Colors.white, onPressed: scaffold.hideCurrentSnackBar),
-  //     ),
-  //   );
-  // }
 }
+

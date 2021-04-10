@@ -270,143 +270,151 @@ class _MyHomePageState extends State<MyTrackExpenses> {
                                             left: 2,
                                             bottom: 5,
                                             right: 2),
-                                        child: ListTile(
-                                            contentPadding:
+                                          child:Column(
+                                            children: [
+                                              ListTile(
+                                                contentPadding:
                                                 EdgeInsets.symmetric(
                                                     horizontal: 10.0,
                                                     vertical: 10.0),
-                                            leading: Container(
-                                              padding:
+                                                leading: Container(
+                                                  padding:
                                                   EdgeInsets.only(right: 5.0),
-                                              decoration: new BoxDecoration(
-                                                  border: new Border(
-                                                      right: new BorderSide(
-                                                          width: 5.0,
-                                                          color: Colors.blue))),
-                                              child: Image.asset(
-                                                "assets/pending_ap.png",
-                                                height: 70,
-                                                width: 60,
-                                                fit: BoxFit.contain,
-                                              ),
-                                            ),
-                                            title: Padding(
-                                              padding:
+                                                  decoration: new BoxDecoration(
+                                                      border: new Border(
+                                                          right: new BorderSide(
+                                                              width: 5.0,
+                                                              color: Colors.blue))),
+                                                  child: Image.asset(
+                                                    "assets/pending_ap.png",
+                                                    height: 70,
+                                                    width: 60,
+                                                    fit: BoxFit.contain,
+                                                  ),
+                                                ),
+                                                title: Padding(
+                                                  padding:
                                                   const EdgeInsets.all(4.0),
-                                              child: Text(
-                                                "EXPENSE : " +
-                                                    notificationlist.expenseName
-                                                        .toUpperCase(),
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.orange,
-                                                    fontWeight:
+                                                  child: Text(
+                                                    "EXPENSE : " +
+                                                        notificationlist.expenseName
+                                                            .toUpperCase(),
+                                                    style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.orange,
+                                                        fontWeight:
                                                         FontWeight.w400),
-                                              ),
-                                            ),
-                                            // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
-
-                                            subtitle: Column(
-                                              children: [
-                                                Row(
+                                                  ),
+                                                ),
+                                                subtitle: Column(
                                                   children: [
-                                                    Padding(
-                                                        padding:
+                                                    Row(
+                                                      children: [
+                                                        Padding(
+                                                            padding:
                                                             EdgeInsets.only(
                                                                 left: 5.0)),
-                                                    Text(
-                                                      "Price : " +
-                                                          "Rs " +
-                                                          notificationlist
-                                                              .price,
-                                                      style: TextStyle(
-                                                          fontSize: 15,
-                                                          color: Colors.black54,
-                                                          fontWeight:
+                                                        Text(
+                                                          "Price : " +
+                                                              "Rs " +
+                                                              notificationlist
+                                                                  .price,
+                                                          style: TextStyle(
+                                                              fontSize: 15,
+                                                              color: Colors.black54,
+                                                              fontWeight:
                                                               FontWeight.w200),
+                                                        ),
+
+                                                      ],
                                                     ),
-                                                    /*Padding(
-                                                padding: const EdgeInsets.all(8.0),
-                                                child:
-                                              ),*/
-                                                  ],
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Container(
-                                                      child: Row(
-                                                        children: [
-                                                          Padding(
-                                                            padding:
+                                                    Row(
+                                                      children: [
+                                                        Container(
+                                                          child: Row(
+                                                            children: [
+                                                              Padding(
+                                                                padding:
                                                                 const EdgeInsets
                                                                     .all(4.0),
-                                                            child: Icon(
-                                                                Icons
-                                                                    .date_range_rounded,
-                                                                color: Colors
-                                                                    .black),
-                                                          ),
-                                                          Text(
-                                                            "$date",
-                                                            style: TextStyle(
-                                                                fontSize: 14,
-                                                                color: Colors
-                                                                    .black54,
-                                                                fontWeight:
+                                                                child: Icon(
+                                                                    Icons
+                                                                        .date_range_rounded,
+                                                                    color: Colors
+                                                                        .black),
+                                                              ),
+                                                              Text(
+                                                                "$date",
+                                                                style: TextStyle(
+                                                                    fontSize: 14,
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontWeight:
                                                                     FontWeight
                                                                         .w600),
+                                                              ),
+                                                            ],
                                                           ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Container(
-                                                      child: InkWell(
-                                                        child: Icon(
-                                                          Icons.edit,
-                                                          color: Colors.black54,
-                                                          size: 30,
                                                         ),
-                                                        onTap: () {
-                                                          Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          UpdateExpensesApplication(
-                                                                            id: notificationlist.id,
-                                                                            date:
-                                                                                notificationlist.date.toString(),
-                                                                            employeeID:
-                                                                                notificationlist.employeeId,
-                                                                            image:
-                                                                                path + notificationlist.image,
-                                                                            expenseID:
-                                                                                notificationlist.expenseId,
-                                                                            expenseType:
-                                                                                notificationlist.type,
-                                                                            expenseValue:
-                                                                                notificationlist.km,
-                                                                            description:
-                                                                                notificationlist.description,
-                                                                            expenseName:
-                                                                                notificationlist.expenseName,
-                                                                          )));
-                                                        },
-                                                      ),
-                                                    )
+
+                                                      ],
+                                                    ),
                                                   ],
                                                 ),
-                                              ],
-                                            ),
-                                            trailing: Icon(
-                                                Icons
-                                                    .keyboard_arrow_right_rounded,
-                                                color: Colors.white,
-                                                size: 30.0)),
+                                               /* trailing: Icon(
+                                                    Icons
+                                                        .keyboard_arrow_right_rounded,
+                                                    color: Colors.white,
+                                                    size: 30.0),*/
+
+                                              ),
+                                              ListTile(
+                                                trailing: Container(
+                                                  child: RaisedButton(
+                                                    child: Text('Edit'),
+                                                    color: Colors.orange,
+                                                    textColor: Colors.white,
+                                                    elevation: 5,
+                                                    shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(18.0),
+                                                        side: BorderSide(color: Colors.blue[1000])
+                                                    ),
+                                                    // padding: EdgeInsets.fromLTRB(100, 20, 100, 20),
+                                                    splashColor: Colors.blue[1000],
+                                                    onPressed: (){Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder:
+                                                                (context) =>
+                                                                UpdateExpensesApplication(
+                                                                  id: notificationlist.id,
+                                                                  date:
+                                                                  notificationlist.date.toString(),
+                                                                  employeeID:
+                                                                  notificationlist.employeeId,
+                                                                  image:
+                                                                  path + notificationlist.image,
+                                                                  expenseID:
+                                                                  notificationlist.expenseId,
+                                                                  expenseType:
+                                                                  notificationlist.type,
+                                                                  expenseValue:
+                                                                  notificationlist.km,
+                                                                  description:
+                                                                  notificationlist.description,
+                                                                  expenseName:
+                                                                  notificationlist.expenseName,
+                                                                )));},
+                                                  ),
+
+                                                ),
+                                              ),
+                                            ],
+                                          )
+
+
                                       ),
+
                                     )
                                   : Card(
                                       // color: Colors.green,
@@ -598,15 +606,13 @@ void _showDialog(context, String type, String km, String price, String message,
             ),
             Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Visibility(
-                      visible: km != null ? true : false,
-                      child: Text("Km : " + km,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue[1000]))),
+                Visibility( visible: km=='0'?true:false,child:
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text("Km : "+km,style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blue[1000])),),
+
                 ),
+
               ],
             ),
             Row(
