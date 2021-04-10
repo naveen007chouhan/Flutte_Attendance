@@ -27,11 +27,13 @@ class ImageDeatilState extends State<ImageDetail> {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: (orientation == Orientation.portrait) ? 2 : 3),
       itemBuilder: (BuildContext context, int index) {
-        print(widget.path+list[index].trim());
+        // print("Print Image --> "+widget.path+list[index].trim());
+        var image=widget.path+list[index].trim();
+        print("Print Image2 --> "+image);
         return new Card(
           child: new GridTile(
             child: new Image.network(
-                widget.path+list[index].trim()!=null?widget.path+list[index].trim():"",color: Colors.orange),
+                image!=null?image:""),
             //just for testing, will fill with image later
           ),
         );
